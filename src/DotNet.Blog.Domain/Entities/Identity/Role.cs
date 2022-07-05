@@ -14,6 +14,8 @@ namespace DotNet.Blog.Domain
 
         public string Name { get; set; } = string.Empty;
 
+        public bool IsEnabled { get; set; }
+
 
         #region navigation properties
 

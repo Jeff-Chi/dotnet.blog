@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace DotNet.Blog.Application.Contracts
+{
+    public class CreateRoleInput
+    {
+        /// <summary>
+        /// 角色名
+        /// </summary>
+        [Required]
+        public string Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// 是否启用
+        /// </summary>
+        public bool IsEnabled { get; set; }
+    }
+}
