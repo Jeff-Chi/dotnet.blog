@@ -29,7 +29,6 @@ namespace DotNet.Blog.EFCore
             //    .Take(input.PageSize).ToListAsync();
 
             return await Build(input,true).ToListAsync(cancellationToken);
-
         }
 
         public async Task<int> GetCountAsync(GetUsersInput input, CancellationToken cancellationToken = default)

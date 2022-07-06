@@ -10,10 +10,10 @@ namespace DotNet.Blog.Application.Contracts
 {
     public interface IRoleService: IDenpendency
     {
-        Task<UserDto?> GetAsync(Guid id);
-        Task<List<UserDto>> GetListAsync(GetRolesInput input);
-        Task<UserDto> InsertAsync(CreateRoleInput input);
-        Task<UserDto?> UpdateAsync(Guid id, UpdateUserInput input);
+        Task<RoleDto?> GetAsync(Guid id);
+        Task<PagedResultDto<RoleDto>> GetListAsync(GetRolesInput input);
+        Task<RoleDto> InsertAsync(CreateRoleInput input);
+        Task<RoleDto?> UpdateAsync(Guid id, CreateRoleInput input);
         Task DeleteAsync(Guid id);
     }
 }

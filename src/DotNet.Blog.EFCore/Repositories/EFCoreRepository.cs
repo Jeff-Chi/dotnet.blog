@@ -1,4 +1,5 @@
 ﻿using DotNet.Blog.Domain;
+using DotNet.Blog.EFCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -72,10 +73,10 @@ namespace DotNet.Blog.EFCore
         }
 
         public async Task<List<TEntity>> GetListAsync(
-            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, bool>>? predicate,
             CancellationToken cancellationToken = default)
         {
-            return await DbSet.Where(predicate).ToListAsync(cancellationToken);
+            return await DbSet.WhereIf(predicate != null, predicate!).ToListAsync(cancellationToken);
         }
 
         public async Task<int> GetCountAsync(

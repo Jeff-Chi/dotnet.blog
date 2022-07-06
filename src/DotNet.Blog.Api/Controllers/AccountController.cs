@@ -144,6 +144,9 @@ namespace DotNet.Blog.Api.Controllers
             await _userService.DeleteAsync(id);
         }
 
+        // TODO: 给用户分配角色
+
+
         /// <summary>
         /// 用户认证,获取token
         /// </summary>
