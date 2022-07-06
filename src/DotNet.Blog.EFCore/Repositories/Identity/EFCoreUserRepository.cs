@@ -39,8 +39,19 @@ namespace DotNet.Blog.EFCore
 
         public Task<List<Permission>> GetUserPermissions(Guid id, CancellationToken cancellationToken = default)
         {
-            // TODO: get user permissions
-            return Task.FromResult(new List<Permission>());
+            var query = from u in DbSet
+                        join ur in DbContext.Set<UserRole>()
+                        on u.Id equals ur.UserId
+                        join r in DbContext.Set<Role>()
+                        on ur.RoleId equals r.Id
+                        join rp in DbContext.Set<RolePermission>()
+                        on r.Id equals rp.RoleId
+                        join p in DbContext.Set<Permission>()
+                        on rp.PermissionCode  equals p.Code
+                        where u.Id == id
+                        select p;
+
+            return query.ToListAsync(cancellationToken);
         }
 
         #region private methods
