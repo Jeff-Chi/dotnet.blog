@@ -37,7 +37,7 @@ namespace DotNet.Blog.EFCore
             return await query.CountAsync(cancellationToken);
         }
 
-        public Task<List<Permission>> GetUserPermissions(Guid id, CancellationToken cancellationToken = default)
+        public async Task<List<Permission>> GetUserPermissions(Guid id, CancellationToken cancellationToken = default)
         {
             var query = from u in DbSet
                         join ur in DbContext.Set<UserRole>()
@@ -51,7 +51,7 @@ namespace DotNet.Blog.EFCore
                         where u.Id == id
                         select p;
 
-            return query.ToListAsync(cancellationToken);
+            return await query.ToListAsync(cancellationToken);
         }
 
         #region private methods
