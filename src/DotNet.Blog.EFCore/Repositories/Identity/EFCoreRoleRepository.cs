@@ -9,9 +9,16 @@ namespace DotNet.Blog.EFCore
 {
     public class EFCoreRoleRepository : EFCoreRepository<Guid, Role>, IRoleRepository
     {
-        public EFCoreRoleRepository(BlogDbContext dbContext):base(dbContext)
+        public EFCoreRoleRepository(BlogDbContext dbContext) : base(dbContext)
         {
+        }
 
+        public async Task<Role?> GetAsync(Guid id, GetRoleDetailInput input, CancellationToken cancellationToken = default)
+        {
+            return await DbSet
+                .IncludeIf(input.InlcudeRolePermission, r => r.RolePermissions)
+                .Where(r => r.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<int> GetCountAsync(GetRolesInput input, CancellationToken cancellationToken = default)
@@ -20,16 +27,23 @@ namespace DotNet.Blog.EFCore
         }
 
         public async Task<List<Role>> GetListAsync(
-            GetRolesInput input, 
+            GetRolesInput input,
             CancellationToken cancellationToken = default)
         {
             return await Build(input, true).ToListAsync(cancellationToken);
         }
 
-        public Task<List<Permission>> GetRolePermissions(Guid id, CancellationToken cancellationToken = default)
+        public async Task<List<Permission>> GetRolePermissions(Guid id, CancellationToken cancellationToken = default)
         {
             // TODO: 获取角色权限
-            throw new NotImplementedException();
+            var query = from u in DbSet
+                        join up in DbContext.Set<RolePermission>()
+                        on u.Id equals up.RoleId
+                        join p in DbContext.Set<Permission>()
+                        on up.PermissionCode equals p.Code
+                        select p;
+
+            return await query.ToListAsync(cancellationToken);
         }
 
 

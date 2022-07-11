@@ -19,7 +19,7 @@ namespace DotNet.Blog.Application
             _roleRepository = roleRepository;
             _mapper = mapper;
         }
-        
+
         public async Task<RoleDto?> GetAsync(Guid id)
         {
             var role = await _roleRepository.GetAsync(id);
@@ -72,7 +72,7 @@ namespace DotNet.Blog.Application
             var role = await _roleRepository.GetAsync(id);
             if (role == null)
             {
-                throw new BusinessException(404, "未找到用户");
+                throw new BusinessException(404, "未找到角色");
             }
 
             _mapper.Map(input, role);
@@ -88,6 +88,27 @@ namespace DotNet.Blog.Application
             {
                 await _roleRepository.DeleteAsync(role);
             }
+        }
+
+        public async Task<RoleDto> CreateRolePermissionAsync(CreateRolePermissionInput input)
+        {
+            var role = await _roleRepository.GetAsync(input.RoleId, new GetRoleDetailInput
+            {
+                InlcudeRolePermission = true
+            });
+            if (role == null)
+            {
+                throw new BusinessException(404, "未找到角色");
+            }
+
+            role.RolePermissions = input.PermissionCodes
+                .Select(p => new RolePermission() { RoleId = input.RoleId, PermissionCode = p })
+                .ToList();
+            await _roleRepository.UpdateAsync(role);
+
+            var dto = _mapper.Map<RoleDto>(role);
+
+            return dto;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using DotNet.Blog.Application.Contracts;
 using DotNet.Blog.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNet.Blog.Api.Controllers
@@ -65,11 +64,11 @@ namespace DotNet.Blog.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<UserDto>> CreateAsync(CreateRoleInput input)
+        public async Task<ActionResult<RoleDto>> CreateAsync(CreateRoleInput input)
         {
-            var userDto = await _roleService.InsertAsync(input);
+            var roleDto = await _roleService.InsertAsync(input);
 
-            return CreatedAtAction(null, userDto);
+            return CreatedAtAction(null, roleDto);
         }
 
         [HttpPut("{id}")]
@@ -93,6 +92,19 @@ namespace DotNet.Blog.Api.Controllers
         }
 
 
-        // TODO: 给角色分配权限
+        /// <summary>
+        /// 给角色分配权限
+        /// </summary>
+        /// <param name="input">输入参数</param>
+        /// <returns></returns>
+        [HttpPost("RolePermission")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<RoleDto>> CreateRolePermissionAsync(CreateRolePermissionInput input)
+        {
+            var dto = await _roleService.CreateRolePermissionAsync(input);
+            return CreatedAtAction(null, dto);
+        }
     }
 }

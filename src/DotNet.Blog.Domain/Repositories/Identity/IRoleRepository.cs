@@ -11,6 +11,15 @@ namespace DotNet.Blog.Domain
     public interface IRoleRepository : IRepository<Guid, Role>, IDenpendency
     {
         /// <summary>
+        /// get
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="input">输入参数</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        Task<Role?> GetAsync(Guid id, GetRoleDetailInput input, CancellationToken cancellationToken = default);
+
+        /// <summary>
         /// 获取角色列表
         /// </summary>
         /// <param name="input">输入参数</param>

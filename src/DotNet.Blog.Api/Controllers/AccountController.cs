@@ -146,6 +146,10 @@ namespace DotNet.Blog.Api.Controllers
 
         // TODO: 给用户分配角色
 
+        public async Task CreateUserRoleAsync(CreateUserRoleInput input)
+        {
+
+        }
 
         /// <summary>
         /// 用户认证,获取token
