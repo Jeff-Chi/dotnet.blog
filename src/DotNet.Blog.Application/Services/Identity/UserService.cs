@@ -50,21 +50,29 @@ namespace DotNet.Blog.Application
             return dto;
         }
 
-        public async Task<List<UserDto>> GetListAsync(GetUsersInput input)
+        public async Task<PagedResultDto<UserDto>> GetListAsync(GetUsersInput input)
         {
-            var users = await _userRepository.GetListAsync(input);
 
+            var count = await _userRepository.GetCountAsync(input);
+            if (count == 0)
+            {
+                return new PagedResultDto<UserDto>();
+            }
+
+            var users = await _userRepository.GetListAsync(input);
             var dtos = _mapper.Map<List<UserDto>>(users);
 
-            return dtos;
-
+            return new PagedResultDto<UserDto>
+            {
+                TotalCount = count,
+                Items = dtos
+            };
         }
 
         public async Task<int> GetCountAsync(GetUsersInput input)
         {
             return await _userRepository.GetCountAsync(input);
         }
-
 
         public async Task<UserDto> InsertAsync(CreateUserInput input)
         {
@@ -96,7 +104,7 @@ namespace DotNet.Blog.Application
             var user = await _userRepository.GetAsync(id);
             if (user == null)
             {
-                throw new BusinessException(404,"未找到用户");
+                throw new BusinessException(404, "未找到用户");
             }
 
             _mapper.Map(input, user);
@@ -113,6 +121,28 @@ namespace DotNet.Blog.Application
             {
                 await _userRepository.DeleteAsync(user);
             }
+        }
+
+        public async Task<UserDto> CreateUserRoleAsync(CreateUserRoleInput input)
+        {
+            var user = await _userRepository.GetAsync(input.UserId, new GetUserDetailInput
+            {
+                IncludeUserRole = true
+            });
+            if (user == null)
+            {
+                throw new BusinessException(404, "未找到用户");
+            }
+
+            user.UserRoles = input.RoleIds
+                .Select(r => new UserRole() { UserId = input.UserId, RoleId = r })
+                .ToList();
+
+            await _userRepository.UpdateAsync(user);
+
+            var dto = _mapper.Map<UserDto>(user);
+
+            return dto;
         }
     }
 }

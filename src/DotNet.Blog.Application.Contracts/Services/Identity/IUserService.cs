@@ -13,11 +13,18 @@ namespace DotNet.Blog.Application.Contracts
     {
         Task<UserDto?> GetAsync(Guid id);
         Task<UserDto> GetAsync(string account, string password);
-        Task<List<UserDto>> GetListAsync(GetUsersInput input);
+        Task<PagedResultDto<UserDto>> GetListAsync(GetUsersInput input);
         Task<UserDto> InsertAsync(CreateUserInput input);
         Task<UserDto?> UpdateAsync(Guid id, UpdateUserInput input);
         Task DeleteAsync(Guid id);
         Task<int> GetCountAsync(GetUsersInput input);
+
+        /// <summary>
+        /// 创建用户角色
+        /// </summary>
+        /// <param name="input">输入参数</param>
+        /// <returns></returns>
+        Task<UserDto> CreateUserRoleAsync(CreateUserRoleInput input);
 
     }
 }

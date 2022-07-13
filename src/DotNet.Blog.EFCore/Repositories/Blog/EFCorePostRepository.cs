@@ -1,20 +1,27 @@
 ﻿using DotNet.Blog.Domain;
 using DotNet.Blog.Domain.Shared;
+using DotNet.Blog.EFCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNet.Blog.EFCore
 {
-    public class EFCorePostRepository : IPostRepository
+    public class EFCorePostRepository : EFCoreRepository<Guid, Post>, IPostRepository
     {
-        private readonly BlogDbContext _blogDbContext;
-        public EFCorePostRepository(BlogDbContext blogDbContext)
+        public EFCorePostRepository(BlogDbContext blogDbContext) : base(blogDbContext)
         {
-            _blogDbContext = blogDbContext;
         }
 
-        public async Task<Post?> GetAsync(Guid id)
+        public async Task<Post?> GetAsync(
+            Guid id,
+            GetPostDetailInput input,
+            CancellationToken cancellationToken = default)
         {
-            return await _blogDbContext.Set<Post>().FindAsync(id);
+            return await DbSet
+                .IncludeIf(input.IncludeUser, p => p.User)
+                .IncludeIf(input.IncludePostCategories, p => p.PostCategories)
+                .IncludeIf(input.IncludePostTags, p => p.PostTags)
+                .Where(u => u.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
         /// <summary>
@@ -22,62 +29,30 @@ namespace DotNet.Blog.EFCore
         /// </summary>
         /// <param name="input">输入参数</param>
         /// <returns></returns>
-        public async Task<int> GetCountAsync(GetPostsInput input)
+        public async Task<int> GetCountAsync(GetPostsInput input, CancellationToken cancellationToken = default)
         {
-            var query = Build(input);
-            return await query.CountAsync();
+            return await Build(input).CountAsync(cancellationToken);
         }
 
-        public async Task<List<Post>> GetListAsync(GetPostsInput input)
+        public async Task<List<Post>> GetListAsync(GetPostsInput input, CancellationToken cancellationToken = default)
         {
-            return await Build(input).OrderBy(p=>p.CreationTime).Skip((input.Page - 1) * input.PageSize).Take(input.PageSize).ToListAsync();
+            return await Build(input).ToListAsync(cancellationToken);
         }
-
-        public async Task<int> InsertAsync(Post post)
-        {
-            _blogDbContext.Set<Post>().Add(post);
-            return await _blogDbContext.SaveChangesAsync();
-        }
-
-        public async Task<int> UpdateAsync(Post post)
-        {
-            _blogDbContext.Set<Post>().Update(post);
-            return await _blogDbContext.SaveChangesAsync();
-        }
-
-        public async Task<int> DeleteAsync(Post post)
-        {
-            _blogDbContext.Set<Post>().Remove(post);
-            return await _blogDbContext.SaveChangesAsync();
-        }
-
 
         #region private methods
 
-        private IQueryable<Post> Build(GetPostsInput input)
+        private IQueryable<Post> Build(GetPostsInput input, bool paged = false)
         {
-            IQueryable<Post> query = _blogDbContext.Set<Post>();
-            if (input.IsPublished.HasValue)
-            {
-                query = query.Where(p => p.IsPublished == input.IsPublished);
-            }
+            IQueryable<Post> query = DbSet
+                .IncludeIf(input.IncludeCategory, p => p.PostCategories)
+                .IncludeIf(input.IncludeTag, p => p.PostTags)
+                .IncludeIf(input.IncludeUser, p => p.User)
+                .WhereIf(input.IsPublished.HasValue, p => p.IsPublished == input.IsPublished)
+                .WhereIf(input.UserId.HasValue, p => p.UserId == input.UserId)
+                .WhereIf(!string.IsNullOrEmpty(input.Title), p => p.Title.Contains(input.Title!))
+                .WhereIf(input.CategoryId.HasValue, p => p.PostCategories.Any(pc => pc.CategoryId == input.CategoryId));
 
-            if (input.UserId.HasValue)
-            {
-                query = query.Where(p => p.UserId == input.UserId);
-            }
-
-            if (!string.IsNullOrEmpty(input.Title))
-            {
-                query = query.Where(p => p.Title.Contains(input.Title));
-            }
-
-            if (input.CategoryId.HasValue)
-            {
-                query = query.Where(p => p.PostCategories.Any(pc => pc.CategoryId == input.CategoryId));
-            }
-
-            return query;
+            return query.PageIf(false, input);
         }
 
         #endregion

@@ -13,6 +13,17 @@ namespace DotNet.Blog.EFCore
         {
         }
 
+        public async Task<User?> GetAsync(
+            Guid id,
+            GetUserDetailInput input,
+            CancellationToken cancellationToken = default)
+        {
+            return await DbSet
+                .IncludeIf(input.IncludeUserRole, u => u.UserRoles)
+                .Where(u => u.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
         public async Task<User?> GetAsync(string account, CancellationToken cancellationToken = default)
         {
             return await DbContext.Set<User>()
@@ -28,7 +39,7 @@ namespace DotNet.Blog.EFCore
             //    .Skip((input.Page - 1) * input.PageSize)
             //    .Take(input.PageSize).ToListAsync();
 
-            return await Build(input,true).ToListAsync(cancellationToken);
+            return await Build(input, true).ToListAsync(cancellationToken);
         }
 
         public async Task<int> GetCountAsync(GetUsersInput input, CancellationToken cancellationToken = default)
@@ -47,7 +58,7 @@ namespace DotNet.Blog.EFCore
                         join rp in DbContext.Set<RolePermission>()
                         on r.Id equals rp.RoleId
                         join p in DbContext.Set<Permission>()
-                        on rp.PermissionCode  equals p.Code
+                        on rp.PermissionCode equals p.Code
                         where u.Id == id
                         select p;
 
@@ -56,7 +67,7 @@ namespace DotNet.Blog.EFCore
 
         #region private methods
 
-        private IQueryable<User> Build(GetUsersInput input,bool page = false)
+        private IQueryable<User> Build(GetUsersInput input, bool page = false)
         {
             IQueryable<User> query = DbSet.AsQueryable();
             query = query
@@ -66,7 +77,6 @@ namespace DotNet.Blog.EFCore
 
             return query.PageIf(page, input);
         }
-
         #endregion
     }
 }

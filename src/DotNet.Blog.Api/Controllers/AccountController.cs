@@ -89,18 +89,7 @@ namespace DotNet.Blog.Api.Controllers
         // [Authorize]
         public async Task<PagedResultDto<UserDto>> GetListAsync([FromQuery] GetUsersInput input)
         {
-            var count = await _userService.GetCountAsync(input);
-            if (count == 0)
-            {
-                return new PagedResultDto<UserDto>();
-            }
-
-            var dtos =  await _userService.GetListAsync(input);
-            return new PagedResultDto<UserDto>
-            {
-                TotalCount = count,
-                Items = dtos
-            };
+           return await _userService.GetListAsync(input);
         }
 
         /// <summary>
@@ -144,11 +133,19 @@ namespace DotNet.Blog.Api.Controllers
             await _userService.DeleteAsync(id);
         }
 
-        // TODO: 给用户分配角色
-
-        public async Task CreateUserRoleAsync(CreateUserRoleInput input)
+        /// <summary>
+        /// 给用户分配角色
+        /// </summary>
+        /// <param name="input">输入参数</param>
+        /// <returns>无返回值</returns>
+        [HttpPost("RolePermission")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<UserDto>> CreateUserRoleAsync(CreateUserRoleInput input)
         {
-
+            var userDto = await _userService.CreateUserRoleAsync(input);
+            return CreatedAtAction(null, userDto);
         }
 
         /// <summary>

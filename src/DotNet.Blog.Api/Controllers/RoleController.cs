@@ -31,7 +31,6 @@ namespace DotNet.Blog.Api.Controllers
             return Ok(roleDto);
         }
 
-
         /// <summary>
         /// 查询用户列表
         /// </summary>
@@ -49,7 +48,6 @@ namespace DotNet.Blog.Api.Controllers
         {
             return await _roleService.GetListAsync(input);
         }
-
 
         /// <summary>
         /// 创建角色
