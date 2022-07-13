@@ -22,5 +22,14 @@
         /// </summary>
         public Guid? UserId { get; set; }
 
+        #region navigation properties
+
+        public bool IncludeCategory { get; set; }
+
+        public bool IncludeTag { get; set; }
+
+        public bool IncludeUser { get; set; }
+        #endregion
+
     }
 }

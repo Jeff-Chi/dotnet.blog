@@ -15,13 +15,15 @@ namespace DotNet.Blog.Api.Controllers
         }
 
         /// <summary>
-        /// 获取列表
+        /// 获取文章列表
         /// </summary>
+        /// <param name="input">输入参数</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<List<PostDto>> GetList([FromQuery]GetPostsInput input)
+        public async Task<PagedResultDto<PostDto>> GetListAsync([FromQuery]GetPostsInput input)
         {
             return await _postService.GetListAsync(input);
         }
+
     }
 }

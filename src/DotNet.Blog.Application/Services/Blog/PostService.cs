@@ -8,17 +8,18 @@ namespace DotNet.Blog.Application
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
+        private readonly CurrentUserContext _userContext;
         private readonly IMapper _mapper;
-
-        public PostService(IPostRepository postRepository, IMapper mapper)
+        public PostService(IPostRepository postRepository, CurrentUserContext userContext, IMapper mapper)
         {
             _postRepository = postRepository;
             _mapper = mapper;
+            _userContext = userContext;
         }
 
-        public async Task<PostDto?> GetAsync(Guid id)
+        public async Task<PostDto?> GetAsync(Guid id, GetPostDetailInput input)
         {
-            var post = await _postRepository.GetAsync(id);
+            var post = await _postRepository.GetAsync(id, input);
             if (post == null)
             {
                 return null;
@@ -29,31 +30,31 @@ namespace DotNet.Blog.Application
             return dto;
         }
 
-        public async Task<List<PostDto>> GetListAsync(GetPostsInput input)
+        public async Task<PagedResultDto<PostDto>> GetListAsync(GetPostsInput input)
         {
-            // var asdsad = await _postRepository.GetCountAsync(input);
-
+            var count = await _postRepository.GetCountAsync(input);
+            if (count==0)
+            {
+                return new PagedResultDto<PostDto>();
+            }
             var posts = await _postRepository.GetListAsync(input);
 
             var dtos = _mapper.Map<List<PostDto>>(posts);
 
-            return dtos;
+            return new PagedResultDto<PostDto>()
+            {
+                Items = dtos,
+                TotalCount = count
+            };
         }
 
         public async Task<PostDto> InsertAsync(Guid userId, CreatePostInput input)
         {
             var post = _mapper.Map(input, new Post(Guid.NewGuid())
             {
-                UserId = userId,
+                UserId = _userContext.CurrentUser!.Id,
             });
             
-            //Post post = new Post(Guid.NewGuid())
-            //{
-            //    Title = input.Title,
-            //    IsPublished = input.IsPublished,
-            //    Content = input.Content,
-            //    UserId = userId
-            //};
              await _postRepository.InsertAsync(post);
 
              var dto = _mapper.Map<PostDto>(post);
@@ -65,14 +66,11 @@ namespace DotNet.Blog.Application
             var post = await _postRepository.GetAsync(id);
             if (post == null)
             {
-                throw new NullReferenceException();
+                throw new BusinessException(404, "未找到文章");
             }
 
             _mapper.Map(input, post);
 
-            //post.Title = input.Title;
-            //post.Content = input.Content;
-            //post.IsPublished = input.IsPublished;
             await _postRepository.UpdateAsync(post);
 
             var dto = _mapper.Map<PostDto>(post);

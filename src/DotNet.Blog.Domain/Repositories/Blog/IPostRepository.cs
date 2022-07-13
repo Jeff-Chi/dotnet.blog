@@ -1,14 +1,15 @@
-﻿using DotNet.Blog.Domain.Shared;
+﻿using DotNet.Blog.Api.Extensions;
+using DotNet.Blog.Domain.Shared;
 
 namespace DotNet.Blog.Domain
 {
-    public interface IPostRepository
+    public interface IPostRepository: IRepository<Guid, Post>, IDenpendency
     {
-        Task<Post?> GetAsync(Guid id);
-        Task<List<Post>> GetListAsync(GetPostsInput input);
-        Task<int> GetCountAsync(GetPostsInput input);
-        Task<int> InsertAsync(Post post);
-        Task<int> UpdateAsync(Post post);
-        Task<int> DeleteAsync(Post post);
+        Task<Post?> GetAsync(
+            Guid id,
+            GetPostDetailInput input,
+            CancellationToken cancellationToken = default);
+        Task<List<Post>> GetListAsync(GetPostsInput input, CancellationToken cancellationToken = default);
+        Task<int> GetCountAsync(GetPostsInput input, CancellationToken cancellationToken = default);
     }
 }
