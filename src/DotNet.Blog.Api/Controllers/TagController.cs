@@ -1,18 +1,31 @@
 ﻿using DotNet.Blog.Application.Contracts;
 using DotNet.Blog.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNet.Blog.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class TagController : ControllerBase
     {
-        private readonly ICategoryService _categoryService;
-        public CategoryController(ICategoryService categoryService)
+        private readonly ITagService _tagService;
+        public TagController(ITagService tagService)
         {
-            _categoryService = categoryService;
+            _tagService = tagService;
+        }
+
+
+        /// <summary>
+        /// 获取所有标签
+        /// </summary>
+        /// <param name="input">输入参数</param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<PagedResultDto<TagDto>> GetListAsync([FromQuery] GetTagsInput input)
+        {
+            return await _tagService.GetListAsync(input);
         }
 
         /// <summary>
@@ -20,38 +33,27 @@ namespace DotNet.Blog.Api.Controllers
         /// </summary>
         /// <param name="input">输入参数</param>
         /// <returns></returns>
-        [HttpGet]
-        public async Task<PagedResultDto<CategoryDto>> GetListAsync([FromQuery] GetCategoriesInput input)
-        {
-            return await _categoryService.GetListAsync(input);
-        }
-
-        /// <summary>
-        /// 创建分类
-        /// </summary>
-        /// <param name="input">输入参数</param>
-        /// <returns></returns>
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<CategoryDto>> CreateAsync(CreateCategoryInput input)
+        public async Task<ActionResult<CategoryDto>> CreateAsync(CreateTagInput input)
         {
-            var dto = await _categoryService.InsertAsync(input);
+            var dto = await _tagService.InsertAsync(input);
 
             return CreatedAtAction(null, dto);
         }
 
         [HttpPut]
         [Authorize]
-        public async Task UpdateAsync(Guid id,CreateCategoryInput input)
+        public async Task UpdateAsync(Guid id, CreateTagInput input)
         {
-            await _categoryService.UpdateAsync(id,input);
+            await _tagService.UpdateAsync(id, input);
         }
 
         [HttpDelete]
         [Authorize]
         public async Task DeleteAsync(Guid id)
         {
-            await _categoryService.DeleteAsync(id);
+            await _tagService.DeleteAsync(id);
         }
     }
 }
