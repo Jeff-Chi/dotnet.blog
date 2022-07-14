@@ -32,8 +32,9 @@ namespace DotNet.Blog.Application
 
         public async Task<PagedResultDto<PostDto>> GetListAsync(GetPostsInput input)
         {
+            List<string> s = new List<string>(10);
             var count = await _postRepository.GetCountAsync(input);
-            if (count==0)
+            if (count == 0)
             {
                 return new PagedResultDto<PostDto>();
             }
@@ -48,17 +49,17 @@ namespace DotNet.Blog.Application
             };
         }
 
-        public async Task<PostDto> InsertAsync(Guid userId, CreatePostInput input)
+        public async Task<PostDto> InsertAsync(CreatePostInput input)
         {
             var post = _mapper.Map(input, new Post(Guid.NewGuid())
             {
                 UserId = _userContext.CurrentUser!.Id,
             });
-            
-             await _postRepository.InsertAsync(post);
 
-             var dto = _mapper.Map<PostDto>(post);
-             return dto;
+            await _postRepository.InsertAsync(post);
+
+            var dto = _mapper.Map<PostDto>(post);
+            return dto;
         }
 
         public async Task<PostDto?> UpdateAsync(Guid id, CreatePostInput input)
@@ -86,6 +87,6 @@ namespace DotNet.Blog.Application
                 await _postRepository.DeleteAsync(post);
             }
         }
-        
+
     }
 }

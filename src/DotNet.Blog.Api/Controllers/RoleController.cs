@@ -15,13 +15,18 @@ namespace DotNet.Blog.Api.Controllers
             _roleService = roleService;
         }
 
+        /// <summary>
+        /// 依据id查询
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserDto>> GetAsync(Guid id)
+        public async Task<ActionResult<RoleDto>> GetAsync(Guid id)
         {
             var roleDto = await _roleService.GetAsync(id);
             if (roleDto == null)
