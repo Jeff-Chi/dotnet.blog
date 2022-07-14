@@ -13,7 +13,7 @@ namespace DotNet.Blog.Api.Extensions
         {
             #region 依赖注入
             //services.AddScoped<IUserService, UserService>();
-            var baseType = typeof(IDenpendency);
+            var baseType = typeof(IDependency);
             var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
             var referencedAssemblies = System.IO.Directory.GetFiles(path, "*.dll").Select(Assembly.LoadFrom).ToArray();
             var types = referencedAssemblies
@@ -32,6 +32,16 @@ namespace DotNet.Blog.Api.Extensions
 
             #endregion
 
+            return services;
+        }
+
+
+        /// <summary>
+        /// 注入服务 v2
+        /// </summary>
+        /// <param name="services"></param>
+        public static IServiceCollection InjectServiceV2(this IServiceCollection services)
+        {
             return services;
         }
     }

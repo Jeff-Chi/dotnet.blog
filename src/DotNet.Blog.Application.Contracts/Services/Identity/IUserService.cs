@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application.Contracts
 {
-    public interface IUserService: IDenpendency
+    public interface IUserService: IDependency
     {
         Task<UserDto?> GetAsync(Guid id);
         Task<UserDto> GetAsync(string account, string password);

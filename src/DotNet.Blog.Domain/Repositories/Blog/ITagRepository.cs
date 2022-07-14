@@ -2,7 +2,7 @@
 
 namespace DotNet.Blog.Domain
 {
-    public interface ITagRepository : IRepository<Guid, Tag>, IDenpendency
+    public interface ITagRepository : IRepository<Guid, Tag>, IDependency
     {
         Task<List<Tag>> GetListAsync(GetTagsInput input, CancellationToken cancellationToken = default);
         Task<int> GetCountAsync(GetTagsInput input, CancellationToken cancellationToken = default);

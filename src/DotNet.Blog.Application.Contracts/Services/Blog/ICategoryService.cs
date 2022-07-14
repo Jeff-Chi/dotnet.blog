@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application.Contracts
 {
-    public interface ICategoryService:IDenpendency
+    public interface ICategoryService:IDependency
     {
         Task<PagedResultDto<CategoryDto>> GetListAsync(GetCategoriesInput input);
         Task<CategoryDto> InsertAsync(CreateCategoryInput input);

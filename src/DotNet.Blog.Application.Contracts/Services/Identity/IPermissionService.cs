@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application.Contracts
 {
-    public interface IPermissionService: IDenpendency
+    public interface IPermissionService: IDependency
     {
         /// <summary>
         /// 获取所有权限

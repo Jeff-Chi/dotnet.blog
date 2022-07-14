@@ -2,7 +2,7 @@
 
 namespace DotNet.Blog.Application.Contracts
 {
-    public interface ITagService: IDenpendency
+    public interface ITagService: IDependency
     {
         Task<PagedResultDto<TagDto>> GetListAsync(GetTagsInput input);
         Task<TagDto> InsertAsync(CreateTagInput input);
