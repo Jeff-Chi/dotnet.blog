@@ -76,7 +76,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //builder.Services.TryAddEnumerable(ServiceDescriptor.Transient<IAuthorizationHandler, MinimumAgeAuthorizationHandler>());
 
 // 注入自定义策略提供程序
-builder.Services.AddSingleton<IAuthorizationPolicyProvider, AppAuthorizationPolicyProvider>();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
 // todo .. Authorization
 builder.Services.AddAuthorization(options =>

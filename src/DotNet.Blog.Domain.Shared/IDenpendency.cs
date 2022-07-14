@@ -1,4 +1,4 @@
-﻿namespace DotNet.Blog.Api.Extensions
+﻿namespace DotNet.Blog.Domain.Shared
 {
     public interface IDenpendency
     {

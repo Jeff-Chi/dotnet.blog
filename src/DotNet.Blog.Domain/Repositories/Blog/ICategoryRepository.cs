@@ -2,13 +2,9 @@
 
 namespace DotNet.Blog.Domain
 {
-    public interface ICategoryRepository
+    public interface ICategoryRepository:IRepository<Guid,Category>, IDenpendency
     {
-        Task<Category?> GetAsync(Guid id);
-        Task<List<Category>> GetListAsync(GetCategoriesInput input);
-        Task<int> GetCountAsync(GetCategoriesInput input);
-        Task<int> InsertAsync(Category post);
-        Task<int> UpdateAsync(Category post);
-        Task<int> DeleteAsync(Category post);
+        Task<List<Category>> GetListAsync(GetCategoriesInput input, CancellationToken cancellationToken = default);
+        Task<int> GetCountAsync(GetCategoriesInput input, CancellationToken cancellationToken = default);
     }
 }

@@ -1,5 +1,4 @@
-﻿using DotNet.Blog.Api.Extensions;
-using DotNet.Blog.Domain.Shared;
+﻿using DotNet.Blog.Domain.Shared;
 
 namespace DotNet.Blog.Domain
 {

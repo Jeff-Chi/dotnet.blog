@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using DotNet.Blog.Domain.Shared;
+using System.Reflection;
 
 namespace DotNet.Blog.Api.Extensions
 {

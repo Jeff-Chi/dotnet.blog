@@ -1,4 +1,4 @@
-﻿using DotNet.Blog.Api.Extensions;
+﻿using DotNet.Blog.Domain.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;

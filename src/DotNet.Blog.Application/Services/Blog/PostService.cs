@@ -32,7 +32,6 @@ namespace DotNet.Blog.Application
 
         public async Task<PagedResultDto<PostDto>> GetListAsync(GetPostsInput input)
         {
-            List<string> s = new List<string>(10);
             var count = await _postRepository.GetCountAsync(input);
             if (count == 0)
             {

@@ -1,63 +1,36 @@
 ﻿using DotNet.Blog.Domain;
 using DotNet.Blog.Domain.Shared;
+using DotNet.Blog.EFCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DotNet.Blog.EFCore
 {
-    public class EFCoreCategoryRepository : ICategoryRepository
+    public class EFCoreCategoryRepository : EFCoreRepository<Guid, Category>, ICategoryRepository
     {
-        private readonly BlogDbContext _blogDbContext;
-        public EFCoreCategoryRepository(BlogDbContext blogDbContext)
+        public EFCoreCategoryRepository(BlogDbContext blogDbContext) : base(blogDbContext)
         {
-            _blogDbContext = blogDbContext;
-        }
-        
-
-        public async Task<Category?> GetAsync(Guid id)
-        {
-            return await _blogDbContext.Set<Category>().FindAsync(id);
         }
 
-        public async Task<int> GetCountAsync(GetCategoriesInput input)
+
+        public async Task<int> GetCountAsync(GetCategoriesInput input, CancellationToken cancellationToken = default)
         {
             var query = Build(input);
-            return await query.CountAsync();
+            return await query.CountAsync(cancellationToken);
         }
 
-        public async Task<List<Category>> GetListAsync(GetCategoriesInput input)
+        public async Task<List<Category>> GetListAsync(GetCategoriesInput input, CancellationToken cancellationToken = default)
         {
-            return await Build(input).Skip((input.Page - 1) * input.PageSize).Take(input.PageSize).ToListAsync();
-        }
-
-        public async Task<int> InsertAsync(Category category)
-        {
-            _blogDbContext.Set<Category>().Add(category);
-            return await _blogDbContext.SaveChangesAsync();
-        }
-
-        public async Task<int> UpdateAsync(Category category)
-        {
-            _blogDbContext.Set<Category>().Update(category);
-            return await _blogDbContext.SaveChangesAsync();
-        }
-
-        public async Task<int> DeleteAsync(Category category)
-        {
-            _blogDbContext.Set<Category>().Remove(category);
-            return await _blogDbContext.SaveChangesAsync();
+            return await Build(input,true).ToListAsync(cancellationToken);
         }
 
 
         #region private methods
 
-        private IQueryable<Category> Build(GetCategoriesInput input)
+        private IQueryable<Category> Build(GetCategoriesInput input, bool paged = false)
         {
-            IQueryable<Category> query = _blogDbContext.Set<Category>();
-
-            if (!string.IsNullOrEmpty(input.Name))
-            {
-                query = query.Where(c => c.Name.Contains(input.Name));
-            }
+            IQueryable<Category> query = DbSet
+                .WhereIf(!string.IsNullOrEmpty(input.Name), c => c.Name.Contains(input.Name!))
+                .PageIf(paged, input);
 
             return query;
         }
