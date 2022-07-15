@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Domain.Shared
 {
-    public interface ITransientDependency
+    /// <summary>
+    /// transient
+    /// </summary>
+    public interface ITransientDependency: IDependency
     {
     }
 }

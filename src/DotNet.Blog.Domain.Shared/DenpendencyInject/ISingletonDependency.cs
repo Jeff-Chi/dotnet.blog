@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Domain.Shared
 {
-    public interface ISingletonDependency
+    /// <summary>
+    /// singleton
+    /// </summary>
+    public interface ISingletonDependency: IDependency
     {
     }
 }

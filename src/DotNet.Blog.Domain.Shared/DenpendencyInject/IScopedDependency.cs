@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Domain.Shared
 {
-    public interface IScopedDependency
+    /// <summary>
+    /// scoped
+    /// </summary>
+    public interface IScopedDependency: IDependency
     {
     }
 }
