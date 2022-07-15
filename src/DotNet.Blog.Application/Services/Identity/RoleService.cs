@@ -72,7 +72,7 @@ namespace DotNet.Blog.Application
             var role = await _roleRepository.GetAsync(id);
             if (role == null)
             {
-                throw new BusinessException(404, "未找到角色");
+                throw new BusinessException("404", "未找到角色");
             }
 
             _mapper.Map(input, role);
@@ -98,7 +98,7 @@ namespace DotNet.Blog.Application
             });
             if (role == null)
             {
-                throw new BusinessException(404, "未找到角色");
+                throw new BusinessException("404", "未找到角色");
             }
 
             role.RolePermissions = input.PermissionCodes

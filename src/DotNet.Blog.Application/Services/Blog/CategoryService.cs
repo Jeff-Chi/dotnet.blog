@@ -66,7 +66,7 @@ namespace DotNet.Blog.Application
             var category = await _categoryRepository.GetAsync(id);
             if (category == null)
             {
-                throw new BusinessException(404, "未找到分类");
+                throw new BusinessException("404", "未找到分类");
             }
 
             _mapper.Map(input, category);

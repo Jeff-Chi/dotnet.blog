@@ -65,7 +65,7 @@ namespace DotNet.Blog.Application
             var tag = await _tagRepository.GetAsync(id);
             if (tag == null)
             {
-                throw new BusinessException(404, "未找到文章");
+                throw new BusinessException("404", "未找到文章");
             }
 
             _mapper.Map(input, tag);

@@ -66,7 +66,7 @@ namespace DotNet.Blog.Application
             var post = await _postRepository.GetAsync(id);
             if (post == null)
             {
-                throw new BusinessException(404, "未找到文章");
+                throw new BusinessException("404", "未找到文章");
             }
 
             _mapper.Map(input, post);

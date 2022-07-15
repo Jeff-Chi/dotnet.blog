@@ -26,12 +26,12 @@ namespace DotNet.Blog.Application
             var user = await _userRepository.GetAsync(account);
             if (user == null)
             {
-                throw new BusinessException(400, "用户名不存在");
+                throw new BusinessException("400", "用户名不存在");
             }
 
             if (user.Password != password)
             {
-                throw new BusinessException(400, "用户名或密码错误");
+                throw new BusinessException("400", "用户名或密码错误");
             }
             var dto = _mapper.Map<UserDto>(user);
             return dto;
@@ -84,7 +84,7 @@ namespace DotNet.Blog.Application
 
             if (count > 0)
             {
-                throw new BusinessException(400, "账号已存在");
+                throw new BusinessException("400", "账号已存在");
             }
 
             var user = _mapper.Map(input, new User(Guid.NewGuid())
@@ -104,7 +104,7 @@ namespace DotNet.Blog.Application
             var user = await _userRepository.GetAsync(id);
             if (user == null)
             {
-                throw new BusinessException(404, "未找到用户");
+                throw new BusinessException("404", "未找到用户");
             }
 
             _mapper.Map(input, user);
@@ -131,7 +131,7 @@ namespace DotNet.Blog.Application
             });
             if (user == null)
             {
-                throw new BusinessException(404, "未找到用户");
+                throw new BusinessException("404", "未找到用户");
             }
 
             user.UserRoles = input.RoleIds

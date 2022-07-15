@@ -2,7 +2,7 @@
 {
     public class ErrorDto
     {
-        public int Status { get; set; }
+        public string? Code { get; set; }
 
         public Dictionary<string, List<string>> Errors { get; } = new();
     }

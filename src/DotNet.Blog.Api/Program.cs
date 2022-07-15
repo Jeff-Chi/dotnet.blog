@@ -241,9 +241,10 @@ app.UseExceptionHandler(options =>
 {
     options.Run(async context =>
     {
-        var error = new ErrorDto
+        int statusCode = StatusCodes.Status500InternalServerError;
+        var error = new ErrorDto()
         {
-            Status = StatusCodes.Status500InternalServerError
+            Code = StatusCodes.Status500InternalServerError.ToString()
         };
 
         var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
@@ -251,10 +252,7 @@ app.UseExceptionHandler(options =>
         {
             if (exception is BusinessException businessException)
             {
-                if (businessException.Code != 0)
-                {
-                    error.Status = businessException.Code;
-                }
+                error.Code = businessException.Code;
 
                 error.Errors["Message"] = new List<string> { exception.Message };
             }
@@ -270,7 +268,7 @@ app.UseExceptionHandler(options =>
             }
         }
 
-        context.Response.StatusCode = error.Status;
+        context.Response.StatusCode = statusCode;
         context.Response.ContentType = Application.Json;
 
         await context.Response.WriteAsJsonAsync(error);
