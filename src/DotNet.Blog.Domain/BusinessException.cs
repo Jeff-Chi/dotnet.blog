@@ -11,25 +11,25 @@ namespace DotNet.Blog.Domain
         public BusinessException()
         {
         }
-        
 
-        public BusinessException(string? message) : base(message)
+
+        public BusinessException(string message) : base(message)
         {
         }
 
-        public BusinessException(string? code, string? message) : base(message)
+        public BusinessException(string message, string? code = null) : base(message)
         {
             Code = code;
         }
 
-        public BusinessException(string? code, string? message = null, string? details = null)
+        public BusinessException(string message, string? code = null, string? details = null)
             : base(message)
         {
             Code = code;
             Details = details;
         }
 
-        public BusinessException(string? code =null, string? message = null, string? details = null, Exception? innerException = null)
+        public BusinessException(string message, string? code = null, string? details = null, Exception? innerException = null)
             : base(message, innerException)
         {
             Code = code;
@@ -37,6 +37,8 @@ namespace DotNet.Blog.Domain
         }
 
         public string? Code { get; }
+
+        public int HttpStatusCode { get; set; }
 
         public string? Details { get; set; }
     }

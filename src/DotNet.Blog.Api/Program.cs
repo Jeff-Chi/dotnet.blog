@@ -17,6 +17,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using System.Net;
 using System.Text;
 using System.Text.Json.Serialization;
 using static System.Net.Mime.MediaTypeNames;
@@ -48,6 +49,9 @@ builder.Services.InjectService();
 // generics service
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EFCoreRepository<>));
 
+// current user service.
+builder.Services.AddScoped<CurrentUserContext>();
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Add DbContext 1.MySqlServerVersion.LatestSupportedServerVersion
@@ -55,7 +59,6 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 // 3.MySqlServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Blog")
 builder.Services.AddDbContext<BlogDbContext>(options =>
 options.UseMySql(builder.Configuration.GetConnectionString("Blog"), MySqlServerVersion.AutoDetect(builder.Configuration.GetConnectionString("Blog"))));
-
 // Add JwtBearer Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -244,39 +247,44 @@ app.UseExceptionHandler(options =>
 {
     options.Run(async context =>
     {
+        // HttpStatusCode
         int statusCode = StatusCodes.Status500InternalServerError;
-        var error = new ErrorDto()
-        {
-            Code = StatusCodes.Status500InternalServerError.ToString()
-        };
+        var errorResponse = new ErrorResponse();
 
         var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
         if (exception != null)
         {
             if (exception is BusinessException businessException)
             {
-                statusCode = StatusCodes.Status403Forbidden;
+                if (businessException.HttpStatusCode > 0)
+                {
+                    statusCode = businessException.HttpStatusCode;
+                }
+                // statusCode = StatusCodes.Status403Forbidden;
 
-                error.Code = businessException.Code;
+                errorResponse.Code = businessException.Code;
 
-                error.Errors["Message"] = new List<string> { exception.Message };
+                errorResponse.Message = businessException.Message;
             }
             else if (app.Environment.IsDevelopment())
             {
-                error.Errors["Message"] = new List<string> { exception.Message };
+                errorResponse.Message = exception.Message;
             }
             else
             {
-                // var localizer = context.RequestServices.GetService<IStringLocalizer<SharedResource>>();
-                var message = "internal server error";
-                error.Errors["Message"] = new List<string> { message };
+                // localization
+                // var localizer = context.RequestServices.GetService<IStringLocalizer<object>>();
+                errorResponse.Message = "internal server error";
             }
         }
+
+        // Response StatusCode
+        statusCode = statusCode > 0 ? statusCode : StatusCodes.Status403Forbidden;
 
         context.Response.StatusCode = statusCode;
         context.Response.ContentType = Application.Json;
 
-        await context.Response.WriteAsJsonAsync(error);
+        await context.Response.WriteAsJsonAsync(errorResponse);
     });
 });
 

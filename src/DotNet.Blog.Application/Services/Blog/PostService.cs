@@ -8,13 +8,13 @@ namespace DotNet.Blog.Application
     public class PostService : IPostService
     {
         private readonly IPostRepository _postRepository;
-        //private readonly CurrentUserContext _userContext; CurrentUserContext userContext
+        private readonly CurrentUserContext _userContext;
         private readonly IMapper _mapper;
-        public PostService(IPostRepository postRepository, IMapper mapper)
+        public PostService(IPostRepository postRepository, CurrentUserContext userContext, IMapper mapper)
         {
             _postRepository = postRepository;
+            _userContext = userContext;
             _mapper = mapper;
-            // _userContext = userContext;
         }
 
         public async Task<PostDto?> GetAsync(Guid id, GetPostDetailInput input)
@@ -52,7 +52,7 @@ namespace DotNet.Blog.Application
         {
             var post = _mapper.Map(input, new Post(Guid.NewGuid())
             {
-                UserId = Guid.NewGuid() // _userContext.CurrentUser!.Id,
+                UserId = _userContext.CurrentUser!.Id,
             });
 
             await _postRepository.InsertAsync(post);
