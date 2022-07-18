@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application.Contracts
 {
-    public interface IRoleService: IDependency
+    public interface IRoleService: IScopedDependency
     {
         Task<RoleDto?> GetAsync(Guid id);
         Task<PagedResultDto<RoleDto>> GetListAsync(GetRolesInput input);

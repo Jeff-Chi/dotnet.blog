@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application.Contracts
 {
-    public interface IPermissionService: IDependency
+    public interface IPermissionService: IScopedDependency
     {
         /// <summary>
         /// 获取所有权限

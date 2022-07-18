@@ -26,19 +26,19 @@ namespace DotNet.Blog.Api.Extensions
             {
                 if (typeof(IScopedDependency).IsAssignableFrom(implementType))
                 {
-                    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
+                    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType) && x!= typeof(IScopedDependency));
                     if (interfaceType != null)
                         services.AddScoped(interfaceType, implementType);
                 }
                 else if (typeof(ISingletonDependency).IsAssignableFrom(implementType))
                 {
-                    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
+                    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType) && x != typeof(ISingletonDependency));
                     if (interfaceType != null)
                         services.AddSingleton(interfaceType, implementType);
                 }
                 else
                 {
-                    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType));
+                    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType) && x != typeof(ITransientDependency));
                     if (interfaceType != null)
                         services.AddTransient(interfaceType, implementType);
                 }
@@ -75,7 +75,7 @@ namespace DotNet.Blog.Api.Extensions
             {
                 Type[] interfaces = type.GetInterfaces();
 
-                // TODO: Inject self if interface is null or count is 0.
+                // TODO: Inject self if interface is null or count is 0. and Generics <T>
 
                 var list = interfaces.ToList();
                 if (lifeTimeType == typeof(ISingletonDependency))

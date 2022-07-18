@@ -2,7 +2,7 @@
 
 namespace DotNet.Blog.Domain
 {
-    public interface IUserRepository: IRepository<Guid, User>, IDependency
+    public interface IUserRepository: IRepository<Guid, User>, IScopedDependency
     {
         /// <summary>
         /// 依据用户名获取用户

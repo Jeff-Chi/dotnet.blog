@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Domain
 {
-    public interface IRoleRepository : IRepository<Guid, Role>, IDependency
+    public interface IRoleRepository : IRepository<Guid, Role>, IScopedDependency
     {
         /// <summary>
         /// get

@@ -2,7 +2,7 @@
 
 namespace DotNet.Blog.Domain
 {
-    public interface IPostRepository: IRepository<Guid, Post>, IDependency
+    public interface IPostRepository: IRepository<Guid, Post>, IScopedDependency
     {
         Task<Post?> GetAsync(
             Guid id,

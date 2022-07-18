@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DotNet.Blog.Domain.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -10,8 +11,8 @@ namespace DotNet.Blog.Domain
     /// <summary>
     /// 仓储接口
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    public interface IRepository<TEntity> where TEntity : class
+    /// <typeparam name="TEntity">TEntity</typeparam>
+    public interface IRepository<TEntity>: IScopedDependency where TEntity : class
     {
         Task<TEntity> InsertAsync(
             TEntity entity,

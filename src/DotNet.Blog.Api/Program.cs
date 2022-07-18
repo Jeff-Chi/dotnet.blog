@@ -45,6 +45,9 @@ builder.Logging.ClearProviders().AddSerilog();
 // Add services to the container. 
 builder.Services.InjectService();
 
+// generics service
+builder.Services.AddScoped(typeof(IRepository<>), typeof(EFCoreRepository<>));
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Add DbContext 1.MySqlServerVersion.LatestSupportedServerVersion
@@ -252,6 +255,8 @@ app.UseExceptionHandler(options =>
         {
             if (exception is BusinessException businessException)
             {
+                statusCode = StatusCodes.Status403Forbidden;
+
                 error.Code = businessException.Code;
 
                 error.Errors["Message"] = new List<string> { exception.Message };

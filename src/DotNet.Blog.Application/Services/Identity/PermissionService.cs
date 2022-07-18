@@ -10,9 +10,9 @@ namespace DotNet.Blog.Application
 {
     public class PermissionService : IPermissionService
     {
-        private readonly IRepository<Permission> _repository;
+        private readonly IRepository<Permission> _repository; 
         private readonly IMapper _mapper;
-        public PermissionService(IRepository<Permission> repository, IMapper mapper)
+        public PermissionService(IRepository<Permission> repository,IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;

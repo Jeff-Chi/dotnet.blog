@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application.Contracts
 {
-    public interface IPostService: IDependency
+    public interface IPostService: IScopedDependency
     {
         Task<PagedResultDto<PostDto>> GetListAsync(GetPostsInput input);
         Task<PostDto> InsertAsync(CreatePostInput input);
