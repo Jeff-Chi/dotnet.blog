@@ -4,52 +4,50 @@
     {
 
         /// <summary>
-        /// Validation error message.
+        /// Relate invalid member (field/property).
         /// </summary>
-        public string? Message { get; set; }
+        public string Member { get; set; } = string.Empty;
 
         /// <summary>
-        /// Relate invalid members (fields/properties).
+        /// Validation error messages.
         /// </summary>
-        public string[]? Members { get; set; }
+        public string[]? Messages { get; set; }
 
         /// <summary>
         /// Creates a new instance of <see cref="ValidationErrorInfo"/>.
         /// </summary>
         public ValidationErrorInfo()
         {
-
         }
 
         /// <summary>
         /// Creates a new instance of <see cref="ValidationErrorInfo"/>.
         /// </summary>
-        /// <param name="message">Validation error message</param>
-        public ValidationErrorInfo(string message)
+        /// <param name="member">Validation error message</param>
+        public ValidationErrorInfo(string member)
         {
-            Message = message;
+            Member = member;
         }
 
         /// <summary>
         /// Creates a new instance of <see cref="ValidationErrorInfo"/>.
         /// </summary>
-        /// <param name="message">Validation error message</param>
-        /// <param name="members">Related invalid members</param>
-        public ValidationErrorInfo(string message, string[] members)
-            : this(message)
-        {
-            Members = members;
-        }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="ValidationErrorInfo"/>.
-        /// </summary>
-        /// <param name="message">Validation error message</param>
         /// <param name="member">Related invalid member</param>
-        public ValidationErrorInfo(string message, string member)
-            : this(message, new[] { member })
+        /// <param name="messages">Validation error messages</param>
+        public ValidationErrorInfo(string member, string[] messages)
+            : this(member)
         {
+            Messages = messages;
+        }
 
+        /// <summary>
+        /// Creates a new instance of <see cref="ValidationErrorInfo"/>.
+        /// </summary>
+        /// <param name="member">Related invalid member</param>
+        /// <param name="message">Validation error messages</param>
+        public ValidationErrorInfo(string member, string message)
+            : this(member, new[] { message })
+        {
         }
     }
 }

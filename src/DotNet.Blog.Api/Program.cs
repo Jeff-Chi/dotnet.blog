@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
@@ -114,6 +115,43 @@ builder.Services.AddControllers()
     {
         // 忽略json序列化循环引用
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    })
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errorResponse = new ErrorResponse()
+            {
+                Code = "400",
+                Message = "One or more validation errors occurred"
+
+            };
+
+            var validationErrors = new List<ValidationErrorInfo>();
+
+            foreach (var item in context.ModelState)
+            {
+                var errorInfo = new ValidationErrorInfo();
+                errorInfo.Member = item.Key;
+                // item.Value.Errors.Count
+                // errorInfo.Messages = new string[item.Value.Errors.Count];
+
+                errorInfo.Messages = item.Value.Errors.Select(e => e.ErrorMessage).ToArray();
+
+                validationErrors.Add(errorInfo);
+            }
+
+            errorResponse.ValidationErrors = validationErrors.ToArray();
+            return new BadRequestObjectResult(errorResponse);
+            //{
+            //    //StatusCode = StatusCodes.Status400BadRequest
+            //};
+
+            //return new UnprocessableEntityObjectResult(errorResponse);
+            //{
+            //    //StatusCode = StatusCodes.Status422UnprocessableEntity,
+            //};
+        };
     });
 
 

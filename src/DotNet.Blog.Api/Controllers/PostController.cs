@@ -2,6 +2,7 @@
 using DotNet.Blog.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace DotNet.Blog.Api.Controllers
 {
@@ -21,8 +22,14 @@ namespace DotNet.Blog.Api.Controllers
         /// <param name="input">输入参数</param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<PagedResultDto<PostDto>> GetListAsync([FromQuery]GetPostsInput input)
+        //[Authorize(BlogPermissions.Post.Default)]
+        public async Task<ActionResult<PagedResultDto<PostDto>>> GetListAsync([FromQuery] GetPostsInput input)
         {
+            //if (!ModelState.IsValid)
+            //{
+            //    return ValidationProblem(ModelState);
+            //}
+
             return await _postService.GetListAsync(input);
         }
 
