@@ -41,5 +41,9 @@ namespace DotNet.Blog.Domain
         public int HttpStatusCode { get; set; }
 
         public string? Details { get; set; }
+
+        public string? ValidationErrorMember { get; set; }
+
+        public string[]? ValidationErrorMessages { get; set; }
     }
 }
