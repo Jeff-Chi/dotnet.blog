@@ -13,6 +13,6 @@ namespace DotNet.Blog.Application.Contracts
         /// 获取所有权限
         /// </summary>
         /// <returns></returns>
-        Task<List<PermissionDto>> GetAllAsync();
+        Task<List<PermissionDto>> GetListAsync();
     }
 }

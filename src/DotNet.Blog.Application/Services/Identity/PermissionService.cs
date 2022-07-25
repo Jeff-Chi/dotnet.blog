@@ -18,11 +18,18 @@ namespace DotNet.Blog.Application
             _mapper = mapper;
         }
 
-        public async Task<List<PermissionDto>> GetAllAsync()
+        public async Task<List<PermissionDto>> GetListAsync()
         {
             var permissions = await _repository.GetListAsync(null);
 
             return _mapper.Map<List<PermissionDto>>(permissions);
+        }
+
+
+        public Task<List<PermissionTreeDto>> GetPermissionTreesAsync()
+        {
+            // TODO:
+            throw new NotImplementedException();
         }
     }
 }

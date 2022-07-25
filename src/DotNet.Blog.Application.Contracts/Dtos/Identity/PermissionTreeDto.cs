@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application.Contracts
 {
-    public class PermissionDto
+    /// <summary>
+    /// 权限树dto
+    /// </summary>
+    public class PermissionTreeDto
     {
         /// <summary>
         /// Name
@@ -19,7 +22,7 @@ namespace DotNet.Blog.Application.Contracts
         public string Code { get; set; } = string.Empty;
 
         /// <summary>
-        /// Parent Code
+        /// ParentCode
         /// </summary>
         public string? ParentCode { get; set; }
 
@@ -27,5 +30,10 @@ namespace DotNet.Blog.Application.Contracts
         /// Sort Order
         /// </summary>
         public int SortOrder { get; set; }
+
+        /// <summary>
+        /// ChildPermissions
+        /// </summary>
+        public ICollection<PermissionTreeDto> ChildPermissions { get; set; } = new List<PermissionTreeDto>();
     }
 }

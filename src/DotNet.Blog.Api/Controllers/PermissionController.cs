@@ -23,7 +23,19 @@ namespace DotNet.Blog.Api.Controllers
         [Authorize]
         public async Task<List<PermissionDto>> GetListAsync()
         {
-            return await _permissionService.GetAllAsync();
+            return await _permissionService.GetListAsync();
+        }
+
+        /// <summary>
+        /// 获取权限树
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("permission-trees")]
+        [Authorize]
+        public Task<List<PermissionTreeDto>> GetPermissionTreesAsync()
+        {
+            //TODO:
+            throw new NotImplementedException();
         }
     }
 }

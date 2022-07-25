@@ -190,6 +190,11 @@ namespace DotNet.Blog.EFCore
                 // properties
                 b.Property(u => u.Name).HasMaxLength(200).IsRequired();
                 b.Property(u => u.Code).HasMaxLength(100).IsRequired();
+                b.Property(u => u.ParentCode).HasMaxLength(100);
+                b.Property(u => u.SortOrder).IsRequired().ValueGeneratedOnAdd();
+
+
+                b.HasOne<Permission>().WithMany().HasForeignKey(ur => ur.ParentCode);
 
             });
 

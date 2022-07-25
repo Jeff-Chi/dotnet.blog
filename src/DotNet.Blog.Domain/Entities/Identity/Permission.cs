@@ -20,5 +20,15 @@ namespace DotNet.Blog.Domain
         /// Code
         /// </summary>
         public string Code { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Parent Code
+        /// </summary>
+        public string? ParentCode { get; set; }
+
+        /// <summary>
+        /// Sort Order
+        /// </summary>
+        public int SortOrder { get; set; }
     }
 }
