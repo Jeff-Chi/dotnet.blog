@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization.Policy;
 namespace DotNet.Blog.Api.Authorization
 {
     // 自定义授权失败响应结果
-    public class SampleAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
+    public class CustomAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
     {
         private readonly AuthorizationMiddlewareResultHandler defaultHandler = new();
 
@@ -13,14 +13,17 @@ namespace DotNet.Blog.Api.Authorization
             AuthorizationPolicy policy,
             PolicyAuthorizationResult authorizeResult)
         {
-            // If the authorization was forbidden and the resource had a specific requirement,
-            // provide a custom 404 response.
-            if (authorizeResult.Forbidden
-                && authorizeResult.AuthorizationFailure!.FailedRequirements
-                    .OfType<Show404Requirement>().Any())
+            // see https://docs.microsoft.com/en-us/aspnet/core/security/authorization/customizingauthorizationmiddlewareresponse?view=aspnetcore-6.0
+            if (authorizeResult.Forbidden)
             {
-                // Return a 404 to make it appear as if the resource doesn't exist.
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                var errorResponse = new ErrorResponse
+                {
+                    Code = "Error:000001",
+                    Message = "Permission Denied"
+                };
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsJsonAsync(errorResponse);
                 return;
             }
 

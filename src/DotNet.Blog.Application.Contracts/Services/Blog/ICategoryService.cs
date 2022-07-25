@@ -13,6 +13,6 @@ namespace DotNet.Blog.Application.Contracts
         Task<CategoryDto> InsertAsync(CreateCategoryInput input);
         Task<CategoryDto> UpdateAsync(Guid id, CreateCategoryInput input);
         Task DeleteAsync(Guid id);
-        Task<CategoryDto?> GetAsync(Guid id);
+        Task<CategoryDto> GetAsync(Guid id);
     }
 }

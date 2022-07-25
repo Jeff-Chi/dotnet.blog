@@ -84,6 +84,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // 注入自定义策略提供程序
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
 
 // todo .. Authorization
 builder.Services.AddAuthorization(options =>
@@ -297,8 +298,18 @@ app.UseExceptionHandler(options =>
                 if (businessException.HttpStatusCode > 0)
                 {
                     statusCode = businessException.HttpStatusCode;
+
+                    // 处理参数验证错误
+                    if (businessException.HttpStatusCode == StatusCodes.Status400BadRequest)
+                    {
+                        var validationErrors = new List<ValidationErrorInfo>();
+                        ValidationErrorInfo validationError = new();
+                        validationError.Member = businessException.ValidationErrorMember!;
+                        validationError.Messages = businessException.ValidationErrorMessages;
+                        validationErrors.Add(validationError);
+                    }
+
                 }
-                // statusCode = StatusCodes.Status403Forbidden;
 
                 errorResponse.Code = businessException.Code;
 
@@ -312,7 +323,7 @@ app.UseExceptionHandler(options =>
             {
                 // localization
                 // var localizer = context.RequestServices.GetService<IStringLocalizer<object>>();
-                errorResponse.Message = "internal server error";
+                errorResponse.Message = "Internal server error";
             }
         }
 

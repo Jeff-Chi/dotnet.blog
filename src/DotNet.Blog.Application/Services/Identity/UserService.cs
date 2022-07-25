@@ -5,7 +5,7 @@ using DotNet.Blog.Domain.Shared;
 
 namespace DotNet.Blog.Application
 {
-    public class UserService : IUserService
+    public class UserService : BlogAppServiceBase, IUserService
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
@@ -24,26 +24,25 @@ namespace DotNet.Blog.Application
         public async Task<UserDto> GetAsync(string account, string password)
         {
             var user = await _userRepository.GetAsync(account);
+
             if (user == null)
             {
-                throw new BusinessException("400", "用户名不存在");
+                ForbidError("用户名或密码");
             }
 
-            if (user.Password != password)
+            if (user!.Password != password)
             {
-                throw new BusinessException("400", "用户名或密码错误");
+                ForbidError("用户名或密码");
             }
             var dto = _mapper.Map<UserDto>(user);
             return dto;
         }
 
-        public async Task<UserDto?> GetAsync(Guid id)
+        public async Task<UserDto> GetAsync(Guid id)
         {
             var user = await _userRepository.GetAsync(id);
-            if (user == null)
-            {
-                return null;
-            }
+            
+            ValidateNotNull(user);
 
             var dto = _mapper.Map<UserDto>(user);
 
@@ -68,11 +67,7 @@ namespace DotNet.Blog.Application
                 Items = dtos
             };
         }
-
-        public async Task<int> GetCountAsync(GetUsersInput input)
-        {
-            return await _userRepository.GetCountAsync(input);
-        }
+       
 
         public async Task<UserDto> InsertAsync(CreateUserInput input)
         {
@@ -84,7 +79,7 @@ namespace DotNet.Blog.Application
 
             if (count > 0)
             {
-                throw new BusinessException("400", "账号已存在");
+                ForbidError("用户名已存在!");
             }
 
             var user = _mapper.Map(input, new User(Guid.NewGuid())
@@ -99,15 +94,15 @@ namespace DotNet.Blog.Application
             return dto;
         }
 
-        public async Task<UserDto?> UpdateAsync(Guid id, UpdateUserInput input)
+        public async Task<UserDto> UpdateAsync(Guid id, UpdateUserInput input)
         {
             var user = await _userRepository.GetAsync(id);
-            if (user == null)
-            {
-                throw new BusinessException("404", "未找到用户");
-            }
+
+            ValidateNotNull(user);
 
             _mapper.Map(input, user);
+
+            await _userRepository.UpdateAsync(user!);
 
             var dto = _mapper.Map<UserDto>(user);
 
@@ -129,12 +124,10 @@ namespace DotNet.Blog.Application
             {
                 IncludeUserRole = true
             });
-            if (user == null)
-            {
-                throw new BusinessException("404", "未找到用户");
-            }
 
-            user.UserRoles = input.RoleIds
+            ValidateNotNull(user);
+
+            user!.UserRoles = input.RoleIds
                 .Select(r => new UserRole() { UserId = input.UserId, RoleId = r })
                 .ToList();
 

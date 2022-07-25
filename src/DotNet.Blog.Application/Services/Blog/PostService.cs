@@ -5,7 +5,7 @@ using DotNet.Blog.Domain.Shared;
 
 namespace DotNet.Blog.Application
 {
-    public class PostService : IPostService
+    public class PostService : BlogAppServiceBase,IPostService
     {
         private readonly IPostRepository _postRepository;
         private readonly CurrentUserContext _userContext;
@@ -17,13 +17,11 @@ namespace DotNet.Blog.Application
             _mapper = mapper;
         }
 
-        public async Task<PostDto?> GetAsync(Guid id, GetPostDetailInput input)
+        public async Task<PostDto> GetAsync(Guid id, GetPostDetailInput input)
         {
             var post = await _postRepository.GetAsync(id, input);
-            if (post == null)
-            {
-                return null;
-            }
+
+            ValidateNotNull(post);
 
             var dto = _mapper.Map<PostDto>(post);
 
@@ -61,17 +59,15 @@ namespace DotNet.Blog.Application
             return dto;
         }
 
-        public async Task<PostDto?> UpdateAsync(Guid id, CreatePostInput input)
+        public async Task<PostDto> UpdateAsync(Guid id, CreatePostInput input)
         {
             var post = await _postRepository.GetAsync(id);
-            if (post == null)
-            {
-                throw new BusinessException("404", "未找到文章");
-            }
+
+            ValidateNotNull(post);
 
             _mapper.Map(input, post);
 
-            await _postRepository.UpdateAsync(post);
+            await _postRepository.UpdateAsync(post!);
 
             var dto = _mapper.Map<PostDto>(post);
 

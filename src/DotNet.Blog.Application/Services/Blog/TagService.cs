@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application
 {
-    public class TagService : ITagService
+    public class TagService : BlogAppServiceBase,ITagService
     {
         private readonly ITagRepository _tagRepository;
         private readonly IMapper _mapper;
@@ -19,13 +19,11 @@ namespace DotNet.Blog.Application
             _tagRepository = tagRepository;
             _mapper = mapper;
         }
-        public async Task<TagDto?> GetAsync(Guid id)
+        public async Task<TagDto> GetAsync(Guid id)
         {
             var tag = await _tagRepository.GetAsync(id);
-            if (tag == null)
-            {
-                return null;
-            }
+            
+            ValidateNotNull(tag);
 
             var dto = _mapper.Map<TagDto>(tag);
 
@@ -60,17 +58,15 @@ namespace DotNet.Blog.Application
             return dto;
         }
 
-        public async Task<TagDto?> UpdateAsync(Guid id, CreateTagInput input)
+        public async Task<TagDto> UpdateAsync(Guid id, CreateTagInput input)
         {
             var tag = await _tagRepository.GetAsync(id);
-            if (tag == null)
-            {
-                throw new BusinessException("404", "未找到文章");
-            }
+
+            ValidateNotNull(tag);
 
             _mapper.Map(input, tag);
 
-            await _tagRepository.UpdateAsync(tag);
+            await _tagRepository.UpdateAsync(tag!);
 
             var dto = _mapper.Map<TagDto>(tag);
 

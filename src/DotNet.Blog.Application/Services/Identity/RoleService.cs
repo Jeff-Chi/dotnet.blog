@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application
 {
-    public class RoleService : IRoleService
+    public class RoleService : BlogAppServiceBase, IRoleService
     {
         private readonly IRoleRepository _roleRepository;
         private readonly IMapper _mapper;
@@ -20,13 +20,11 @@ namespace DotNet.Blog.Application
             _mapper = mapper;
         }
 
-        public async Task<RoleDto?> GetAsync(Guid id)
+        public async Task<RoleDto> GetAsync(Guid id)
         {
             var role = await _roleRepository.GetAsync(id);
-            if (role == null)
-            {
-                return null;
-            }
+           
+            ValidateNotNull(role);
 
             var dto = _mapper.Map<RoleDto>(role);
 
@@ -67,13 +65,11 @@ namespace DotNet.Blog.Application
             return dto;
         }
 
-        public async Task<RoleDto?> UpdateAsync(Guid id, CreateRoleInput input)
+        public async Task<RoleDto> UpdateAsync(Guid id, CreateRoleInput input)
         {
             var role = await _roleRepository.GetAsync(id);
-            if (role == null)
-            {
-                throw new BusinessException("404", "未找到角色");
-            }
+
+            ValidateNotNull(role);
 
             _mapper.Map(input, role);
 
@@ -96,12 +92,10 @@ namespace DotNet.Blog.Application
             {
                 InlcudeRolePermission = true
             });
-            if (role == null)
-            {
-                throw new BusinessException("404", "未找到角色");
-            }
 
-            role.RolePermissions = input.PermissionCodes
+            ValidateNotNull(role);
+
+            role!.RolePermissions = input.PermissionCodes
                 .Select(p => new RolePermission() { RoleId = input.RoleId, PermissionCode = p })
                 .ToList();
             await _roleRepository.UpdateAsync(role);

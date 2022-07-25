@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DotNet.Blog.Application
 {
-    public class CategoryService : ICategoryService
+    public class CategoryService : BlogAppServiceBase, ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
@@ -20,13 +20,11 @@ namespace DotNet.Blog.Application
             _mapper = mapper;
         }
 
-        public async Task<CategoryDto?> GetAsync(Guid id)
+        public async Task<CategoryDto> GetAsync(Guid id)
         {
             var category = await _categoryRepository.GetAsync(id);
-            if (category == null)
-            {
-                return null;
-            }
+
+            ValidateNotNull(category);
 
             var dto = _mapper.Map<CategoryDto>(category);
 
@@ -64,14 +62,12 @@ namespace DotNet.Blog.Application
         public async Task<CategoryDto> UpdateAsync(Guid id, CreateCategoryInput input)
         {
             var category = await _categoryRepository.GetAsync(id);
-            if (category == null)
-            {
-                throw new BusinessException("404", "未找到分类");
-            }
+
+            ValidateNotNull(category);
 
             _mapper.Map(input, category);
 
-            await _categoryRepository.UpdateAsync(category);
+            await _categoryRepository.UpdateAsync(category!);
 
             var dto = _mapper.Map<CategoryDto>(category);
 

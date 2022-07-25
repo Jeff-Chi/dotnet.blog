@@ -13,6 +13,7 @@ namespace DotNet.Blog.Application
 
         protected static void BadRequestError(string member, List<string> errorMessages)
         {
+            // 参数错误
             throw new BusinessException("One or more validation errors occurred", "400")
             {
                 HttpStatusCode = 400,
@@ -33,10 +34,17 @@ namespace DotNet.Blog.Application
             }
         }
 
-
-        protected static void ForbidError(string? message = null)
+        public static void PermissionError()
         {
-            throw new BusinessException(message ?? "Forbidden", "403")
+            // 权限错误
+            ForbidError("Permission Denied", "Error:000001");
+        }
+
+
+        protected static void ForbidError(string? message = null, string code = "Error:000002")
+        {
+            // 业务通用错误，如需特殊错误自定义约定code
+            throw new BusinessException(message ?? "Client Error", "Error:000002")
             {
                 HttpStatusCode = 403
             };

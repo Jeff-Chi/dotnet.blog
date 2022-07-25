@@ -11,8 +11,8 @@ namespace DotNet.Blog.Application.Contracts
     {
         Task<PagedResultDto<PostDto>> GetListAsync(GetPostsInput input);
         Task<PostDto> InsertAsync(CreatePostInput input);
-        Task<PostDto?> UpdateAsync(Guid id, CreatePostInput input);
+        Task<PostDto> UpdateAsync(Guid id, CreatePostInput input);
         Task DeleteAsync(Guid id);
-        Task<PostDto?> GetAsync(Guid id, GetPostDetailInput input);
+        Task<PostDto> GetAsync(Guid id, GetPostDetailInput input);
     }
 }
