@@ -6,67 +6,37 @@ namespace DotNet.Blog.Api.Extensions
     public static class ServiceCollectionExtension
     {
         /// <summary>
-        /// 注入服务
+        /// 注册服务
         /// </summary>
-        /// <param name="services"></param>
-        public static IServiceCollection InjectService(this IServiceCollection services)
+        /// <param name="services">services</param>
+        /// <returns></returns>
+        public static IServiceCollection RegisterServices(this IServiceCollection services)
         {
-            var baseType = typeof(IDependency);
             var path = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
             var referencedAssemblies = Directory.GetFiles(path, "*.dll").Select(Assembly.LoadFrom).ToArray();
 
-            var types = referencedAssemblies
-                .SelectMany(a => a.DefinedTypes)
-                .Select(type => type.AsType())
-                .Where(x => x != baseType && baseType.IsAssignableFrom(x)).ToList();
 
-            var implementTypes = types.Where(x => x.IsClass).ToList();
-            var interfaceTypes = types.Where(x => x.IsInterface).ToList();
-            foreach (var implementType in implementTypes)
-            {
-                if (typeof(IScopedDependency).IsAssignableFrom(implementType))
-                {
-                    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType) && x!= typeof(IScopedDependency));
-                    if (interfaceType != null)
-                        services.AddScoped(interfaceType, implementType);
-                }
-                else if (typeof(ISingletonDependency).IsAssignableFrom(implementType))
-                {
-                    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType) && x != typeof(ISingletonDependency));
-                    if (interfaceType != null)
-                        services.AddSingleton(interfaceType, implementType);
-                }
-                else
-                {
-                    var interfaceType = interfaceTypes.FirstOrDefault(x => x.IsAssignableFrom(implementType) && x != typeof(ITransientDependency));
-                    if (interfaceType != null)
-                        services.AddTransient(interfaceType, implementType);
-                }
-            }
+            // attribute
+            services.RegisterServiceByAttribute(ServiceLifetime.Singleton, referencedAssemblies);
+            services.RegisterServiceByAttribute(ServiceLifetime.Scoped, referencedAssemblies);
+            services.RegisterServiceByAttribute(ServiceLifetime.Transient, referencedAssemblies);
 
+            // interface
+            services.RegisterServiceByInterFace(typeof(ISingletonDependency), referencedAssemblies);
+            services.RegisterServiceByInterFace(typeof(IScopedDependency), referencedAssemblies);
+            services.RegisterServiceByInterFace(typeof(ITransientDependency), referencedAssemblies);
             return services;
-        }
 
-
-        /// <summary>
-        /// 注入服务 v2
-        /// </summary>
-        /// <param name="services"></param>
-        public static IServiceCollection InjectServiceV2(this IServiceCollection services)
-        {
-            services.RegisterServiceByInterFace(typeof(ISingletonDependency));
-            services.RegisterServiceByInterFace(typeof(IScopedDependency));
-            services.RegisterServiceByInterFace(typeof(ITransientDependency));
-            return services;
         }
 
         #region private methods
 
 
-        private static void RegisterServiceByInterFace(this IServiceCollection services, Type lifeTimeType)
+        private static void RegisterServiceByInterFace(this IServiceCollection services, Type lifeTimeType, Assembly[] assemblies)
         {
-            List<Type> types = AppDomain.CurrentDomain
-                .GetAssemblies()
+           // var baseType = typeof(IDependency);
+
+            List<Type> types = assemblies
                 .SelectMany(x => x.GetTypes())
                 .Where(t => lifeTimeType.IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
                 .ToList();
@@ -77,28 +47,87 @@ namespace DotNet.Blog.Api.Extensions
 
                 // TODO: Inject self if interface is null or count is 0. and Generics <T>
 
-                var list = interfaces.ToList();
-                if (lifeTimeType == typeof(ISingletonDependency))
+                if (!type.IsGenericType)
                 {
-                    list.ForEach(x =>
+                    var list = interfaces.ToList();
+                    if (lifeTimeType == typeof(ISingletonDependency))
                     {
-                        services.AddSingleton(x, type);
-                    });
+                        list.ForEach(x =>
+                        {
+                            services.AddSingleton(x, type);
+                        });
+                    }
+                    else if (lifeTimeType == typeof(IScopedDependency))
+                    {
+                        list.ForEach(x =>
+                        {
+                            services.AddScoped(x, type);
+                        });
+                    }
+                    else if (lifeTimeType == typeof(ITransientDependency))
+                    {
+                        list.ForEach(x =>
+                        {
+                            services.AddTransient(x, type);
+                        });
+                    }
                 }
-                else if (lifeTimeType == typeof(IScopedDependency))
+            }
+        }
+
+
+        /// <summary>
+        /// 通过 ServiceAttribute 批量注册服务
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="serviceLifetime"></param>
+        /// <param name="assemblies"></param>
+        private static void RegisterServiceByAttribute(this IServiceCollection services, ServiceLifetime serviceLifetime, Assembly[] assemblies)
+        {
+            List<Type> types = assemblies
+                .SelectMany(t => t.GetTypes())
+                .Where(t => t.GetCustomAttributes(typeof(ServiceAttribute), false).Length > 0
+                    && t.GetCustomAttribute<ServiceAttribute>()?.Lifetime == serviceLifetime
+                    && t.IsClass && !t.IsAbstract).ToList();
+
+            foreach (var type in types)
+            {
+
+                Type? typeInterface = type.GetInterfaces().FirstOrDefault();
+
+                if (typeInterface == null)
                 {
-                    list.ForEach(x =>
+                    // 服务非继承自接口的直接注入
+                    switch (serviceLifetime)
                     {
-                        services.AddScoped(x, type);
-                    });
+                        case ServiceLifetime.Singleton:
+                            services.AddSingleton(type);
+                            break;
+                        case ServiceLifetime.Scoped:
+                            services.AddScoped(type);
+                            break;
+                        case ServiceLifetime.Transient:
+                            services.AddTransient(type);
+                            break;
+                    }
                 }
-                else if (lifeTimeType == typeof(ITransientDependency))
+                else
                 {
-                    list.ForEach(x =>
+                    // 服务继承自接口的和接口一起注入
+                    switch (serviceLifetime)
                     {
-                        services.AddTransient(x, type);
-                    });
+                        case ServiceLifetime.Singleton:
+                            services.AddSingleton(typeInterface, type);
+                            break;
+                        case ServiceLifetime.Scoped:
+                            services.AddScoped(typeInterface, type);
+                            break;
+                        case ServiceLifetime.Transient:
+                            services.AddTransient(typeInterface, type);
+                            break;
+                    }
                 }
+
             }
 
         }

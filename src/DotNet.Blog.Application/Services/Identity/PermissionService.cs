@@ -36,7 +36,7 @@ namespace DotNet.Blog.Application
 
             foreach (var item in permissions.Where(p => p.Code == null).OrderBy(p => p.SortOrder))
             {
-                PermissionTreeDto dto = new PermissionTreeDto()
+                PermissionTreeDto dto = new()
                 {
                     Code = item.Code,
                     Name = item.Name,

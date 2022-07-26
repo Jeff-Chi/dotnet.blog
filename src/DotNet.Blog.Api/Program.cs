@@ -18,6 +18,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using System;
 using System.Net;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -45,7 +46,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Logging.ClearProviders().AddSerilog();
 
 // Add services to the container. 
-builder.Services.InjectService();
+builder.Services.RegisterServices();
 
 // generics service
 builder.Services.AddScoped(typeof(IRepository<>), typeof(EFCoreRepository<>));
@@ -125,19 +126,20 @@ builder.Services.AddControllers()
             {
                 Code = "400",
                 Message = "One or more validation errors occurred"
-
             };
 
             var validationErrors = new List<ValidationErrorInfo>();
 
             foreach (var item in context.ModelState)
             {
-                var errorInfo = new ValidationErrorInfo();
-                errorInfo.Member = item.Key;
-                // item.Value.Errors.Count
-                // errorInfo.Messages = new string[item.Value.Errors.Count];
+                var errorInfo = new ValidationErrorInfo
+                {
+                    Member = item.Key,
+                    // item.Value.Errors.Count
+                    // errorInfo.Messages = new string[item.Value.Errors.Count];
 
-                errorInfo.Messages = item.Value.Errors.Select(e => e.ErrorMessage).ToArray();
+                    Messages = item.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                };
 
                 validationErrors.Add(errorInfo);
             }
