@@ -20,10 +20,10 @@ namespace DotNet.Blog.Application
             _mapper = mapper;
         }
 
-        public async Task<RoleDto> GetAsync(Guid id)
+        public async Task<RoleDto> GetAsync(Guid id, GetRoleDetailInput input)
         {
-            var role = await _roleRepository.GetAsync(id);
-           
+            var role = await _roleRepository.GetAsync(id, input);
+
             ValidateNotNull(role);
 
             var dto = _mapper.Map<RoleDto>(role);

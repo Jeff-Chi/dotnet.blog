@@ -32,10 +32,9 @@ namespace DotNet.Blog.Api.Controllers
         /// <returns></returns>
         [HttpGet("permission-trees")]
         [Authorize]
-        public Task<List<PermissionTreeDto>> GetPermissionTreesAsync()
+        public async Task<List<PermissionTreeDto>> GetPermissionTreesAsync()
         {
-            //TODO:
-            throw new NotImplementedException();
+            return await _permissionService.GetPermissionTreesAsync();
         }
     }
 }

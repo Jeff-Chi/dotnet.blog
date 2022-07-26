@@ -10,9 +10,9 @@ namespace DotNet.Blog.Application
 {
     public class PermissionService : IPermissionService
     {
-        private readonly IRepository<Permission> _repository; 
+        private readonly IRepository<Permission> _repository;
         private readonly IMapper _mapper;
-        public PermissionService(IRepository<Permission> repository,IMapper mapper)
+        public PermissionService(IRepository<Permission> repository, IMapper mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -20,15 +20,39 @@ namespace DotNet.Blog.Application
 
         public async Task<List<PermissionDto>> GetListAsync()
         {
+            // TODO: sort order
             var permissions = await _repository.GetListAsync(null);
 
             return _mapper.Map<List<PermissionDto>>(permissions);
         }
 
 
-        public Task<List<PermissionTreeDto>> GetPermissionTreesAsync()
+        public async Task<List<PermissionTreeDto>> GetPermissionTreesAsync()
         {
-            // TODO:
+            // TODO:sort order
+            var permissions = await _repository.GetListAsync(null);
+
+            var treeDtos = new List<PermissionTreeDto>();
+
+            foreach (var item in permissions.Where(p => p.Code == null).OrderBy(p => p.SortOrder))
+            {
+                PermissionTreeDto dto = new PermissionTreeDto()
+                {
+                    Code = item.Code,
+                    Name = item.Name,
+                    ParentCode = item.ParentCode,
+                    SortOrder = item.SortOrder,
+                    ChildPermissions = permissions.Where(p => p.ParentCode == item.Code)
+                        .OrderBy(p => p.SortOrder)
+                        .Select(p => new PermissionTreeDto()
+                        {
+                            Code = item.Code,
+                            Name = item.Name,
+                            ParentCode = item.ParentCode,
+                            SortOrder = item.SortOrder,
+                        }).ToList()
+                };
+            }
             throw new NotImplementedException();
         }
     }

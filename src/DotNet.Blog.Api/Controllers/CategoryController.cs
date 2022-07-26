@@ -16,6 +16,18 @@ namespace DotNet.Blog.Api.Controllers
         }
 
         /// <summary>
+        /// 获取指定分类
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns>id</returns>
+        [HttpGet("id")]
+        public async Task<ActionResult<CategoryDto>> GetAsync(Guid id)
+        {
+            return await _categoryService.GetAsync(id);
+        }
+
+
+        /// <summary>
         /// 获取所有分类
         /// </summary>
         /// <param name="input">输入参数</param>

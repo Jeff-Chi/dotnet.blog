@@ -14,5 +14,11 @@ namespace DotNet.Blog.Application.Contracts
         /// </summary>
         /// <returns></returns>
         Task<List<PermissionDto>> GetListAsync();
+
+        /// <summary>
+        /// 获取权限树
+        /// </summary>
+        /// <returns></returns>
+        Task<List<PermissionTreeDto>> GetPermissionTreesAsync();
     }
 }

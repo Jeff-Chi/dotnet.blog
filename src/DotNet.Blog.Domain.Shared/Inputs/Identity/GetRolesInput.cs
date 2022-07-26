@@ -17,5 +17,11 @@ namespace DotNet.Blog.Domain.Shared
         /// 是否启用
         /// </summary>
         public bool? IsEnabled { get; set; }
+
+        #region navigation properties
+
+        public bool IncludeRolePermission { get; set; }
+
+        #endregion
     }
 }

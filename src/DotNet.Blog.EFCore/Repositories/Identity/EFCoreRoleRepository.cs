@@ -54,6 +54,7 @@ namespace DotNet.Blog.EFCore
         {
             IQueryable<Role> query = DbSet.AsQueryable();
             query = query
+                .IncludeIf(input.IncludeRolePermission, r => r.RolePermissions)
                 .WhereIf(input.IsEnabled.HasValue, r => r.IsEnabled == input.IsEnabled)
                 .WhereIf(!string.IsNullOrEmpty(input.Name), r => r.Name.Contains(input.Name!));
 

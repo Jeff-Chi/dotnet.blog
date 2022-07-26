@@ -9,7 +9,7 @@ namespace DotNet.Blog.Application.Contracts
 {
     public interface IRoleService: IScopedDependency
     {
-        Task<RoleDto> GetAsync(Guid id);
+        Task<RoleDto> GetAsync(Guid id, GetRoleDetailInput input);
         Task<PagedResultDto<RoleDto>> GetListAsync(GetRolesInput input);
         Task<RoleDto> InsertAsync(CreateRoleInput input);
         Task<RoleDto> UpdateAsync(Guid id, CreateRoleInput input);

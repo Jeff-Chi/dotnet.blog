@@ -22,14 +22,9 @@ namespace DotNet.Blog.Api.Controllers
         /// <param name="input">输入参数</param>
         /// <returns></returns>
         [HttpGet]
-        //[Authorize(BlogPermissions.Post.Default)]
+        [Authorize(BlogPermissions.Post.Default)]
         public async Task<ActionResult<PagedResultDto<PostDto>>> GetListAsync([FromQuery] GetPostsInput input)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return ValidationProblem(ModelState);
-            //}
-
             return await _postService.GetListAsync(input);
         }
 

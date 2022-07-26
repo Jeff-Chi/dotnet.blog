@@ -19,6 +19,7 @@ namespace DotNet.Blog.Api.Controllers
         /// 依据id查询
         /// </summary>
         /// <param name="id">id</param>
+        /// <param name="input">输入参数</param>
         /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -26,21 +27,17 @@ namespace DotNet.Blog.Api.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<RoleDto>> GetAsync(Guid id)
+        public async Task<ActionResult<RoleDto>> GetAsync(Guid id, GetRoleDetailInput input)
         {
-            var roleDto = await _roleService.GetAsync(id);
-            if (roleDto == null)
-            {
-                return NotFound();
-            }
+            var roleDto = await _roleService.GetAsync(id, input);
             return Ok(roleDto);
         }
 
         /// <summary>
-        /// 查询用户列表
+        /// 查询角色列表
         /// </summary>
         /// <param name="input">输入参数</param>
-        /// <returns>用户列表</returns>
+        /// <returns>角色列表</returns>
         /// <remarks>
         /// </remarks>
         [HttpGet]

@@ -67,10 +67,7 @@ namespace DotNet.Blog.Api.Controllers
         public async Task<ActionResult<UserDto>> GetAsync(Guid id)
         {
             var userDto = await _userService.GetAsync(id);
-            if (userDto == null)
-            {
-                return NotFound();
-            }
+           
             return Ok(userDto);
         }
 
@@ -163,21 +160,21 @@ namespace DotNet.Blog.Api.Controllers
         }
 
         //[Authorize]
-        [HttpGet("Test")]
-        public string GetData()
-        {
-            //HashSet<string> set = new HashSet<string>();
-            //set.Add("s");
-            //set.Add("a");
-            //set.Add("s");
+        //[HttpGet("Test")]
+        //public string GetData()
+        //{
+        //    HashSet<string> set = new HashSet<string>();
+        //    set.Add("s");
+        //    set.Add("a");
+        //    set.Add("s");
 
-            //foreach (var item in set)
-            //{
-            //    Console.WriteLine(item);
-            //}
+        //    foreach (var item in set)
+        //    {
+        //        Console.WriteLine(item);
+        //    }
 
-            return "ok";
-        }
+        //    return "ok";
+        //}
 
         #region private methods
 
@@ -214,10 +211,4 @@ namespace DotNet.Blog.Api.Controllers
         #endregion
 
     }
-
-    //public class Names
-    //{
-    //    public string Messae { get; set; }
-    //}
-
 }

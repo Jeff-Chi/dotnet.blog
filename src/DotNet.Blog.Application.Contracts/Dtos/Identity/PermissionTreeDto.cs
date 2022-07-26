@@ -34,6 +34,6 @@ namespace DotNet.Blog.Application.Contracts
         /// <summary>
         /// ChildPermissions
         /// </summary>
-        public ICollection<PermissionTreeDto> ChildPermissions { get; set; } = new List<PermissionTreeDto>();
+        public ICollection<PermissionTreeDto>? ChildPermissions { get; set; }
     }
 }
