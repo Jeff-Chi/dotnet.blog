@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E717FBA7-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNet.Blog.Test", "DotNet.Blog.Test\DotNet.Blog.Test.csproj", "{A5F47DD8-8EF8-4AC3-8D39-0B2450CE43F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNet.Blog.Migrations.ConsoleApp", "DotNet.Blog.Migrations.Console\DotNet.Blog.Migrations.ConsoleApp.csproj", "{0ECD5441-0972-4B7E-BAF6-89C9D32DB3FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{A5F47DD8-8EF8-4AC3-8D39-0B2450CE43F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5F47DD8-8EF8-4AC3-8D39-0B2450CE43F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5F47DD8-8EF8-4AC3-8D39-0B2450CE43F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0ECD5441-0972-4B7E-BAF6-89C9D32DB3FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0ECD5441-0972-4B7E-BAF6-89C9D32DB3FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0ECD5441-0972-4B7E-BAF6-89C9D32DB3FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0ECD5441-0972-4B7E-BAF6-89C9D32DB3FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +80,7 @@ Global
 		{C2C72980-95D6-4F31-B55F-0FE062FDA1D1} = {C81E85D6-9AA4-46AB-BC00-4D0135478A4F}
 		{983D9508-E9F5-4B37-A5D5-AAA20D14EE5D} = {C81E85D6-9AA4-46AB-BC00-4D0135478A4F}
 		{A5F47DD8-8EF8-4AC3-8D39-0B2450CE43F5} = {E717FBA7-DD01-4AA3-AE4F-53C8FFEF3AEF}
+		{0ECD5441-0972-4B7E-BAF6-89C9D32DB3FC} = {C81E85D6-9AA4-46AB-BC00-4D0135478A4F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F7164A75-E7B5-47FB-AE02-86A1A3078C8C}

@@ -11,6 +11,10 @@ namespace DotNet.Blog.Domain
     /// </summary>
     public class Permission
     {
+        public Permission(string code)
+        {
+            Code = code;
+        }
         /// <summary>
         /// Name
         /// </summary>

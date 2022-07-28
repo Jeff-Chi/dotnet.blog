@@ -3,6 +3,7 @@ using System;
 using DotNet.Blog.Migrations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DotNet.Blog.Migrations.Migrations
 {
     [DbContext(typeof(BlogMigrationsDbContext))]
-    partial class BlogMigrationsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220727092039_Modify")]
+    partial class Modify
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,7 +57,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Category", (string)null);
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.Permission", b =>
@@ -81,7 +83,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("ParentCode");
 
-                    b.ToTable("Permission", (string)null);
+                    b.ToTable("Permission");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.Post", b =>
@@ -136,7 +138,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Post", (string)null);
+                    b.ToTable("Post");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.PostCategory", b =>
@@ -151,7 +153,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CategoryCategory", (string)null);
+                    b.ToTable("CategoryCategory");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.PostTag", b =>
@@ -166,7 +168,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("TagId");
 
-                    b.ToTable("PostTag", (string)null);
+                    b.ToTable("PostTag");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.Role", b =>
@@ -208,7 +210,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Role", (string)null);
+                    b.ToTable("Role");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.RolePermission", b =>
@@ -223,7 +225,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("PermissionCode");
 
-                    b.ToTable("RolePermission", (string)null);
+                    b.ToTable("RolePermission");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.Tag", b =>
@@ -262,7 +264,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("Tag", (string)null);
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.User", b =>
@@ -319,7 +321,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("UserName");
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.UserRole", b =>
@@ -334,7 +336,7 @@ namespace DotNet.Blog.Migrations.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("UserRole", (string)null);
+                    b.ToTable("UserRole");
                 });
 
             modelBuilder.Entity("DotNet.Blog.Domain.Permission", b =>
