@@ -14,5 +14,6 @@ namespace DotNet.Blog.Application.Contracts
         Task<PostDto> UpdateAsync(Guid id, CreatePostInput input);
         Task DeleteAsync(Guid id);
         Task<PostDto> GetAsync(Guid id, GetPostDetailInput input);
+        Task<PostDto> GetAsync(Guid id);
     }
 }

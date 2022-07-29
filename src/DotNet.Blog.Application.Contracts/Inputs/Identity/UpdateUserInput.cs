@@ -8,6 +8,14 @@ namespace DotNet.Blog.Application.Contracts
 {
     public class UpdateUserInput
     {
-        public string Password { get; set; } = string.Empty;
+        /// <summary>
+        /// 昵称
+        /// </summary>
+        public string? NickName { get; set; }
+
+        /// <summary>
+        /// 是否启用
+        /// </summary>
+        public bool IsEabled { get; set; }
     }
 }

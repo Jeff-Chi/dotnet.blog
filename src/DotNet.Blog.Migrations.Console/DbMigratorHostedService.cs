@@ -31,12 +31,18 @@ namespace DotNet.Blog.Migrations.ConsoleApp
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("------------初始化数据开始----------------");
-
             List<Permission> permissions = GetPermissions();
 
             using (var efContext = new BlogMigrationsDbContext())
             {
-                // var permissions = efContext.Set<Permission>().AsNoTracking().ToList();
+                var existUser = await efContext.Set<User>().FirstOrDefaultAsync();
+
+                if (existUser != null)
+                {
+                    _logger.LogInformation("------------失败:种子数据已初始化----------------");
+
+                    _hostApplicationLifetime.StopApplication();
+                }
 
                 if (permissions.Any())
                 {
@@ -87,6 +93,7 @@ namespace DotNet.Blog.Migrations.ConsoleApp
                     _logger.LogInformation("------------初始化数据结束----------------");
                 }
             }
+            _hostApplicationLifetime.StopApplication();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

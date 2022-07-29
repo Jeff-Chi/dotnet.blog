@@ -16,7 +16,7 @@
 
         #region navigation properties
 
-        public ICollection<UserRole>? UserRoles { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
         #endregion
     }

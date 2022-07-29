@@ -35,16 +35,16 @@ namespace DotNet.Blog.EFCore
         {
         }
 
-        public DbSet<Category>? Category { get; set; }
-        public DbSet<Post>? Post { get; set; }
-        public DbSet<PostCategory>? CategoryCategory { get; set; }
-        public DbSet<PostTag>? PostTag { get; set; }
-        public DbSet<Tag>? Tag { get; set; }
-        public DbSet<User>? User { get; set; }
-        public DbSet<Role>? Role { get; set; }
-        public DbSet<UserRole>? UserRole { get; set; }
-        public DbSet<Permission>? Permission { get; set; }
-        public DbSet<RolePermission>? RolePermission { get; set; }
+        public DbSet<Category> Category => Set<Category>();
+        public DbSet<Post> Post => Set<Post>();
+        public DbSet<PostCategory> PostCategory => Set<PostCategory>();
+        public DbSet<PostTag> PostTag => Set<PostTag>();
+        public DbSet<Tag> Tag => Set<Tag>();
+        public DbSet<User> User => Set<User>();
+        public DbSet<Role> Role => Set<Role>();
+        public DbSet<UserRole> UserRole => Set<UserRole>();
+        public DbSet<Permission> Permission => Set<Permission>();
+        public DbSet<RolePermission> RolePermission => Set<RolePermission>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

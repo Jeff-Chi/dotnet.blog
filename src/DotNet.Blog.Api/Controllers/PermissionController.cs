@@ -1,6 +1,5 @@
 ﻿using DotNet.Blog.Application.Contracts;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DotNet.Blog.Api.Controllers
@@ -20,7 +19,10 @@ namespace DotNet.Blog.Api.Controllers
         /// </summary>
         /// <returns>权限列表</returns>
         [HttpGet]
-        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(IdentityPermissions.AccountManagement.Default)]
         public async Task<List<PermissionDto>> GetListAsync()
         {
             return await _permissionService.GetListAsync();
@@ -29,9 +31,12 @@ namespace DotNet.Blog.Api.Controllers
         /// <summary>
         /// 获取权限树
         /// </summary>
-        /// <returns></returns>
+        /// <returns>权限树结构</returns>
         [HttpGet("permission-trees")]
-        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(IdentityPermissions.AccountManagement.Default)]
         public async Task<List<PermissionTreeDto>> GetPermissionTreesAsync()
         {
             return await _permissionService.GetPermissionTreesAsync();

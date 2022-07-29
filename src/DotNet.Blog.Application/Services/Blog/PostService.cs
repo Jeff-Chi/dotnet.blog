@@ -5,7 +5,7 @@ using DotNet.Blog.Domain.Shared;
 
 namespace DotNet.Blog.Application
 {
-    public class PostService : BlogAppServiceBase,IPostService
+    public class PostService : BlogAppServiceBase, IPostService
     {
         private readonly IPostRepository _postRepository;
         private readonly CurrentUserContext _userContext;
@@ -15,6 +15,17 @@ namespace DotNet.Blog.Application
             _postRepository = postRepository;
             _userContext = userContext;
             _mapper = mapper;
+        }
+
+        public async Task<PostDto> GetAsync(Guid id)
+        {
+            var post = await _postRepository.GetAsync(id);
+
+            ValidateNotNull(post);
+
+            var dto = _mapper.Map<PostDto>(post);
+
+            return dto;
         }
 
         public async Task<PostDto> GetAsync(Guid id, GetPostDetailInput input)

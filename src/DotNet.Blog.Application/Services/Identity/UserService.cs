@@ -18,7 +18,7 @@ namespace DotNet.Blog.Application
         /// <summary>
         /// 依据用户名和密码查询用户
         /// </summary>
-        /// <param name="userName">userName</param>
+        /// <param name="account">account</param>
         /// <param name="password">password</param>
         /// <returns></returns>
         public async Task<UserDto> GetAsync(string account, string password)
@@ -35,13 +35,14 @@ namespace DotNet.Blog.Application
                 ForbidError("用户名或密码");
             }
             var dto = _mapper.Map<UserDto>(user);
+
             return dto;
         }
 
         public async Task<UserDto> GetAsync(Guid id)
         {
             var user = await _userRepository.GetAsync(id);
-            
+
             ValidateNotNull(user);
 
             var dto = _mapper.Map<UserDto>(user);
@@ -49,9 +50,25 @@ namespace DotNet.Blog.Application
             return dto;
         }
 
+        public async Task<UserDto> GetAsync(Guid id, GetUserDetailInput input)
+        {
+            var user = await _userRepository.GetAsync(id, input);
+
+            ValidateNotNull(user);
+
+            var dto = _mapper.Map<UserDto>(user);
+
+            if (input.IncludeRole)
+            {
+                var roles = user!.UserRoles.Select(ur => ur.Role).ToList();
+                dto.Roles = _mapper.Map<List<RoleDto>>(roles);
+            }
+
+            return dto;
+        }
+
         public async Task<PagedResultDto<UserDto>> GetListAsync(GetUsersInput input)
         {
-
             var count = await _userRepository.GetCountAsync(input);
             if (count == 0)
             {
@@ -59,7 +76,20 @@ namespace DotNet.Blog.Application
             }
 
             var users = await _userRepository.GetListAsync(input);
-            var dtos = _mapper.Map<List<UserDto>>(users);
+            var dtos = new List<UserDto>(count);
+
+            if (input.IncludeRole)
+            {
+                foreach (User user in users)
+                {
+                    var dto = _mapper.Map<UserDto>(user);
+
+                    var roles = user!.UserRoles.Select(ur => ur.Role).ToList();
+                    dto.Roles = _mapper.Map<List<RoleDto>>(roles);
+
+                    dtos.Add(dto);
+                }
+            }
 
             return new PagedResultDto<UserDto>
             {
@@ -67,11 +97,10 @@ namespace DotNet.Blog.Application
                 Items = dtos
             };
         }
-       
+
 
         public async Task<UserDto> InsertAsync(CreateUserInput input)
         {
-            // validate account  exists
             var count = await _userRepository.GetCountAsync(new GetUsersInput
             {
                 UserName = input.UserName
@@ -100,6 +129,11 @@ namespace DotNet.Blog.Application
 
             ValidateNotNull(user);
 
+            if (string.IsNullOrEmpty(input.NickName))
+            {
+                input.NickName = user!.NickName;
+            }
+
             _mapper.Map(input, user);
 
             await _userRepository.UpdateAsync(user!);
@@ -120,10 +154,7 @@ namespace DotNet.Blog.Application
 
         public async Task<UserDto> CreateUserRoleAsync(CreateUserRoleInput input)
         {
-            var user = await _userRepository.GetAsync(input.UserId, new GetUserDetailInput
-            {
-                IncludeUserRole = true
-            });
+            var user = await _userRepository.GetAsync(input.UserId);
 
             ValidateNotNull(user);
 

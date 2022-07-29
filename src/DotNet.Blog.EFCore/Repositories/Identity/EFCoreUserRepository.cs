@@ -18,10 +18,14 @@ namespace DotNet.Blog.EFCore
             GetUserDetailInput input,
             CancellationToken cancellationToken = default)
         {
-            return await DbSet
-                .IncludeIf(input.IncludeUserRole, u => u.UserRoles)
-                .Where(u => u.Id == id)
-                .FirstOrDefaultAsync(cancellationToken);
+            var query = DbSet.Where(u => u.Id == id);
+
+            if (input.IncludeRole)
+            {
+                query = query.Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role);
+            }
+            return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
         public async Task<User?> GetAsync(string account, CancellationToken cancellationToken = default)
@@ -74,6 +78,12 @@ namespace DotNet.Blog.EFCore
                 .WhereIf(input.IsEnabled.HasValue, u => u.IsEnabled == input.IsEnabled)
                 .WhereIf(!string.IsNullOrEmpty(input.UserName), u => u.UserName == input.UserName)
                 .WhereIf(!string.IsNullOrEmpty(input.NickName), u => u.NickName!.Contains(input.NickName!));
+
+            if (input.IncludeRole)
+            {
+                query = query.Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role);
+            }
 
             return query.PageIf(page, input);
         }

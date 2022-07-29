@@ -16,12 +16,34 @@ namespace DotNet.Blog.Api.Controllers
             _postService = postService;
         }
 
+
+        /// <summary>
+        /// 查询指定文章
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="input">输入参数</param>
+        /// <returns>指定文章</returns>
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(BlogPermissions.PostManagement.Default)]
+        public async Task<ActionResult<PostDto>> GetAsync(Guid id, GetPostDetailInput input)
+        {
+            return await _postService.GetAsync(id, input);
+        }
+
         /// <summary>
         /// 获取文章列表
         /// </summary>
         /// <param name="input">输入参数</param>
-        /// <returns></returns>
+        /// <returns>文章列表</returns>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
         [Authorize(BlogPermissions.PostManagement.Default)]
         public async Task<ActionResult<PagedResultDto<PostDto>>> GetListAsync([FromQuery] GetPostsInput input)
         {

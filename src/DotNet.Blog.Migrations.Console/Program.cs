@@ -6,18 +6,18 @@ using Microsoft.Extensions.Logging;
 using DotNet.Blog.Migrations.ConsoleApp;
 
 // log
-//Log.Logger = new LoggerConfiguration()
-//            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-//            .Enrich.FromLogContext()
-//            .WriteTo.Console()
-//            .WriteTo.File(
-//                Path.Combine("Logs/log-.txt"),
-//                LogEventLevel.Information,
-//                rollingInterval: RollingInterval.Day,
-//                fileSizeLimitBytes: 10 * 1024 * 1024,
-//                shared: true,
-//                outputTemplate: @"{source}{Timestamp} [{Level:u3}][{TraceId}][{SpanId}] {Message:lj}{NewLine}{Exception}")
-//            .CreateLogger();
+Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.File(
+                Path.Combine("Logs/log-.txt"),
+                LogEventLevel.Information,
+                rollingInterval: RollingInterval.Day,
+                fileSizeLimitBytes: 10 * 1024 * 1024,
+                shared: true,
+                outputTemplate: @"{source}{Timestamp} [{Level:u3}][{TraceId}][{SpanId}] {Message:lj}{NewLine}{Exception}")
+            .CreateLogger();
 
 await CreateHostBuilder(args).RunConsoleAsync();
 

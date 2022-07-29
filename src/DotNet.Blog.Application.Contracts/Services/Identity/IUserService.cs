@@ -11,7 +11,15 @@ namespace DotNet.Blog.Application.Contracts
     public interface IUserService: IScopedDependency
     {
         Task<UserDto> GetAsync(Guid id);
+
+        /// <summary>
+        /// 使用账户和密码查询用户
+        /// </summary>
+        /// <param name="account">用户名或邮箱</param>
+        /// <param name="password">密码</param>
+        /// <returns>user dto</returns>
         Task<UserDto> GetAsync(string account, string password);
+        Task<UserDto> GetAsync(Guid id,GetUserDetailInput input);
         Task<PagedResultDto<UserDto>> GetListAsync(GetUsersInput input);
         Task<UserDto> InsertAsync(CreateUserInput input);
         Task<UserDto> UpdateAsync(Guid id, UpdateUserInput input);

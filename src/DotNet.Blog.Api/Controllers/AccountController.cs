@@ -58,16 +58,23 @@ namespace DotNet.Blog.Api.Controllers
         //}
         #endregion
 
+        /// <summary>
+        /// 查询指定用户
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="input">输入参数</param>
+        /// <returns>用户详情</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserDto>> GetAsync(Guid id)
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
+        [Authorize(IdentityPermissions.AccountManagement.Default)]
+        public async Task<ActionResult<UserDto>> GetAsync(Guid id,GetUserDetailInput input)
         {
-            var userDto = await _userService.GetAsync(id);
-           
+            var userDto = await _userService.GetAsync(id, input);
+
             return Ok(userDto);
         }
 
@@ -78,53 +85,65 @@ namespace DotNet.Blog.Api.Controllers
         /// <returns>用户列表</returns>
         /// <remarks>
         /// </remarks>
-        [HttpGet(Name = "GetUser")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        // [Authorize]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(IdentityPermissions.AccountManagement.Default)]
         public async Task<PagedResultDto<UserDto>> GetListAsync([FromQuery] GetUsersInput input)
         {
-           return await _userService.GetListAsync(input);
+            return await _userService.GetListAsync(input);
         }
 
         /// <summary>
         /// 创建用户
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="input">输入参数</param>
         /// <returns>a new user.</returns>
         /// <response code="201">Returns the newly created item</response>
         /// <response code="400">If the item is null</response>
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(IdentityPermissions.AccountManagement.Create)]
         public async Task<ActionResult<UserDto>> CreateAsync(CreateUserInput input)
         {
             var userDto = await _userService.InsertAsync(input);
 
             return CreatedAtAction(null, userDto);
-            // return userDto;
         }
 
+        /// <summary>
+        /// 更新用户
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <param name="input">输入参数</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        // [ProducesDefaultResponseType]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(IdentityPermissions.AccountManagement.Edit)]
         public async Task UpdateAsync(Guid id, UpdateUserInput input)
         {
             await _userService.UpdateAsync(id, input);
         }
 
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="id">id</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(IdentityPermissions.AccountManagement.Delete)]
         public async Task DeleteAsync(Guid id)
         {
             await _userService.DeleteAsync(id);
@@ -136,9 +155,10 @@ namespace DotNet.Blog.Api.Controllers
         /// <param name="input">输入参数</param>
         /// <returns>无返回值</returns>
         [HttpPost("RolePermission")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(IdentityPermissions.AccountManagement.Edit)]
         public async Task<ActionResult<UserDto>> CreateUserRoleAsync(CreateUserRoleInput input)
         {
             var userDto = await _userService.CreateUserRoleAsync(input);
@@ -151,11 +171,13 @@ namespace DotNet.Blog.Api.Controllers
         /// <param name="loginDto">输入参数</param>
         /// <returns>token</returns>
         [HttpPost("authenticate")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
         public async Task<string> LoginAsync(LoginDto loginDto)
         {
             var userDto = await _userService.GetAsync(loginDto.Account, loginDto.Password);
-            
+
             return CreateJwtToken(userDto);
         }
 

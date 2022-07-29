@@ -10,7 +10,10 @@ namespace DotNet.Blog.Domain.Shared
     {
         #region includes
 
-        public bool IncludeUserRole { get; set; }
+        /// <summary>
+        /// 是否包含角色数据
+        /// </summary>
+        public bool IncludeRole { get; set; }
 
         #endregion
     }

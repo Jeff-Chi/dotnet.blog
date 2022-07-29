@@ -7,7 +7,6 @@
     {
         public Post(Guid id) : base(id)
         {
-
         }
 
         /// <summary>
