@@ -53,7 +53,8 @@ namespace DotNet.Blog.Application
                         }).ToList()
                 };
             }
-            throw new NotImplementedException();
+
+            return treeDtos;
         }
     }
 }

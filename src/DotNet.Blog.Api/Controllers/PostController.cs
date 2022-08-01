@@ -23,7 +23,7 @@ namespace DotNet.Blog.Api.Controllers
         /// <param name="id">id</param>
         /// <param name="input">输入参数</param>
         /// <returns>指定文章</returns>
-        [HttpGet]
+        [HttpGet("id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
@@ -56,11 +56,11 @@ namespace DotNet.Blog.Api.Controllers
         /// <param name="input">输入参数</param>
         /// <returns></returns>
         [HttpPost]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(BlogPermissions.PostManagement.Create)]
         public async Task<ActionResult<PostDto>> CreateAsync(CreatePostInput input)
         {
             var postDto = await _postService.InsertAsync(input);
@@ -76,9 +76,11 @@ namespace DotNet.Blog.Api.Controllers
         /// <returns></returns>
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
+        [Authorize(BlogPermissions.PostManagement.Edit)]
         public async Task UpdateAsync(Guid id, CreatePostInput input)
         {
             await _postService.UpdateAsync(id, input);
@@ -90,10 +92,11 @@ namespace DotNet.Blog.Api.Controllers
         /// <param name="id">id</param>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
+        [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
+        [Authorize(BlogPermissions.PostManagement.Delete)]
         public async Task DeleteAsync(Guid id)
         {
             await _postService.DeleteAsync(id);

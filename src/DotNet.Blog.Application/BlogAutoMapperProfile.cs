@@ -11,19 +11,25 @@ namespace DotNet.Blog.Application
             #region Identity
 
             CreateMap<User, UserDto>();
-
             CreateMap<CreateUserInput, User>();
+            CreateMap<UpdateUserInput, User>();
+
+            CreateMap<Permission, PermissionDto>();
+
+            CreateMap<Role, RoleDto>();
+            CreateMap<CreateRoleInput, Role>();
 
             #endregion
 
             #region Blog
 
             CreateMap<Post, PostDto>();
-            CreateMap<Category, CategoryDto>();
-            CreateMap<Tag, TagDto>();
-
-            CreateMap<CreateCategoryInput, Category>();
             CreateMap<CreatePostInput, Post>();
+
+            CreateMap<Category, CategoryDto>();
+            CreateMap<CreateCategoryInput, Category>();
+
+            CreateMap<Tag, TagDto>();
             CreateMap<CreateTagInput, Tag>();
 
             #endregion

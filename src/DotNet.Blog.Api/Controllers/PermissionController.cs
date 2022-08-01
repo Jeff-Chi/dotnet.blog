@@ -22,7 +22,7 @@ namespace DotNet.Blog.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
-        [Authorize(IdentityPermissions.AccountManagement.Default)]
+        [Authorize(IdentityPermissions.PermissionManagement.Default)]
         public async Task<List<PermissionDto>> GetListAsync()
         {
             return await _permissionService.GetListAsync();
@@ -36,7 +36,7 @@ namespace DotNet.Blog.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
-        [Authorize(IdentityPermissions.AccountManagement.Default)]
+        [Authorize(IdentityPermissions.PermissionManagement.Default)]
         public async Task<List<PermissionTreeDto>> GetPermissionTreesAsync()
         {
             return await _permissionService.GetPermissionTreesAsync();
