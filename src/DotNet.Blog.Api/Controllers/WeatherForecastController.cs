@@ -23,23 +23,11 @@ public class WeatherForecastController : ControllerBase
     [HttpGet(Name = "GetWeatherForecast")]
     public IEnumerable<WeatherForecast> Get()
     {
-        string PolicyPrefix = "MinimumAge";
-        string policy = "MinimumAge12";
-
-
-        var asd = policy[PolicyPrefix.Length..];
-
-        Console.WriteLine("---........-²âÊÔ..........-----");
-        Console.WriteLine(asd);
-
         MinimumAgeRequirement minimumAge = new MinimumAgeRequirement(1)
         {
             MinimumAge = 444
         };
 
-        Console.WriteLine(minimumAge.MinimumAge);
-
-        _logger.LogError("Insert log...");
         return Enumerable.Range(1, 5).Select(index => new WeatherForecast
         {
             Date = DateTime.Now.AddDays(index),

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
@@ -146,9 +147,6 @@ builder.Services.AddControllers()
 
             errorResponse.ValidationErrors = validationErrors.ToArray();
             return new BadRequestObjectResult(errorResponse);
-            //{
-            //    //StatusCode = StatusCodes.Status400BadRequest
-            //};
 
             //return new UnprocessableEntityObjectResult(errorResponse);
             //{
@@ -246,25 +244,31 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 //    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(5);
 //});
 
+// 1.urls
+// builder.WebHost.UseUrls("http://localhost:5400");
+
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    // 2. ListenLocalhost
+    // serverOptions.ListenLocalhost(5500);
+});
 
 // auto mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
+
 // DI Services
-
-//builder.Services.AddScoped<IPostService, PostService>();
-//builder.Services.AddScoped<IPostRepository, EFCorePostRepository>();
-
-//builder.Services.AddScoped<IUserService, UserService>();
-//builder.Services.AddScoped<IUserRepository, EFCoreUserRepository>();
-
-
 //builder.Services.AddSingleton<
 //    IAuthorizationMiddlewareResultHandler, PermissionAuthorizationHandler>();
 
+builder.Services.AddScoped<PermissionAuthorizationHandler>();
 
 var app = builder.Build();
+
+// 3.urls add
+// app.Urls.Add("http://localhost:5600");
 
 app.UseForwardedHeaders();
 
@@ -362,7 +366,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.UseMiddleware<ConsoleMiddleware>(); // test
 
 // efocre auto save change.
 // app.UseMiddleware<EFCoreSaveChangeMiddleware<BlogContext>>();
