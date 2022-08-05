@@ -265,6 +265,20 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddScoped<PermissionAuthorizationHandler>();
 
+// Configure Options
+
+builder.Services.Configure<SequentialGuidGeneratorOptions>(options => 
+{
+    // default SequentialAsString
+    if (options.DefaultSequentialGuidType == null)
+    {
+        options.DefaultSequentialGuidType = SequentialGuidType.SequentialAsString;
+    }
+});
+
+// TODO: service provider.
+// builder.Services.BuildServiceProvider();
+
 var app = builder.Build();
 
 // 3.urls add
@@ -273,12 +287,17 @@ var app = builder.Build();
 app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+
+if (bool.TryParse(builder.Configuration["UseSwagger"], out bool useSwagger) && useSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 
 //if (bool.TryParse(builder.Configuration["UseSwagger"], out bool useSwagger) && useSwagger)
 //{

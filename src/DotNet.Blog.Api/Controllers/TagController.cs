@@ -1,4 +1,5 @@
 ﻿using DotNet.Blog.Application.Contracts;
+using DotNet.Blog.Domain;
 using DotNet.Blog.Domain.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -11,9 +12,11 @@ namespace DotNet.Blog.Api.Controllers
     public class TagController : ControllerBase
     {
         private readonly ITagService _tagService;
-        public TagController(ITagService tagService)
+        private readonly IGuidGenerator _guidGenerator;
+        public TagController(ITagService tagService, IGuidGenerator guidGenerator)
         {
             _tagService = tagService;
+            _guidGenerator = guidGenerator;
         }
 
         /// <summary>
