@@ -19,7 +19,7 @@ namespace DotNet.Blog.Domain
     /// </summary>
     public class SequentialGuidGenerator : IGuidGenerator, ITransientDependency
     {
-        public SequentialGuidGeneratorOptions Options { get; }
+        public SequentialGuidGeneratorOptions? Options { get; }
 
         private static readonly RandomNumberGenerator RandomNumberGenerator = RandomNumberGenerator.Create();
 
@@ -28,9 +28,13 @@ namespace DotNet.Blog.Domain
             Options = options.Value;
         }
 
+        public SequentialGuidGenerator()
+        {
+        }
+
         public Guid Create()
         {
-            return Create(Options.GetDefaultSequentialGuidType());
+            return Create(Options!.GetDefaultSequentialGuidType());
         }
 
         public Guid Create(SequentialGuidType guidType)

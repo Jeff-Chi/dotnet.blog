@@ -9,6 +9,8 @@ namespace DotNet.Blog.Application
 {
     public class BlogAppServiceBase
     {
+        protected IGuidGenerator GuidGenerator => new SequentialGuidGenerator();
+
         #region protected methods
 
         protected static void BadRequestError(string member, List<string> errorMessages)
@@ -59,6 +61,7 @@ namespace DotNet.Blog.Application
             };
         }
 
+        public static Guid CreateGuid(IGuidGenerator guidGenerator) => guidGenerator.Create(SequentialGuidType.SequentialAsString);
         #endregion
     }
 }

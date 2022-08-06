@@ -51,7 +51,7 @@ namespace DotNet.Blog.Application
 
         public async Task<CategoryDto> InsertAsync(CreateCategoryInput input)
         {
-            var category = _mapper.Map(input, new Category(Guid.NewGuid()));
+            var category = _mapper.Map(input, new Category(CreateGuid(GuidGenerator)));
 
             await _categoryRepository.InsertAsync(category);
 

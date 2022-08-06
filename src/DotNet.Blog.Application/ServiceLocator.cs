@@ -8,6 +8,5 @@ namespace DotNet.Blog.Application
 {
     public class ServiceLocator
     {
-        public static IServiceProvider? Services { get; set; }
     }
 }

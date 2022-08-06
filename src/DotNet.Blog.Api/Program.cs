@@ -276,9 +276,6 @@ builder.Services.Configure<SequentialGuidGeneratorOptions>(options =>
     }
 });
 
-// TODO: service provider.
-// builder.Services.BuildServiceProvider();
-
 var app = builder.Build();
 
 // 3.urls add

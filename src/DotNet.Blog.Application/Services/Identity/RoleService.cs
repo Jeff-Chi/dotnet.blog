@@ -53,7 +53,7 @@ namespace DotNet.Blog.Application
         {
             // TODO: role name  exists
 
-            var role = _mapper.Map(input, new Role(Guid.NewGuid())
+            var role = _mapper.Map(input, new Role(CreateGuid(GuidGenerator))
             {
                 IsEnabled = true
             });

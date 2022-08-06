@@ -50,7 +50,7 @@ namespace DotNet.Blog.Application
 
         public async Task<TagDto> InsertAsync(CreateTagInput input)
         {
-            var tag = _mapper.Map(input, new Tag(Guid.NewGuid()));
+            var tag = _mapper.Map(input, new Tag(CreateGuid(GuidGenerator)));
 
             await _tagRepository.InsertAsync(tag);
 

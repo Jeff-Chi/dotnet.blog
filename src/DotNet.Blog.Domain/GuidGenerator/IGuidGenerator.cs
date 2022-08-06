@@ -9,5 +9,6 @@ namespace DotNet.Blog.Domain
     public interface IGuidGenerator
     {
         Guid Create();
+        Guid Create(SequentialGuidType guidType);
     }
 }

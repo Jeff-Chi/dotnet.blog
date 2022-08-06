@@ -1,4 +1,6 @@
 using DotNet.Blog.Api.Authorization;
+using DotNet.Blog.Application;
+using DotNet.Blog.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +25,9 @@ public class WeatherForecastController : ControllerBase
     [HttpGet(Name = "GetWeatherForecast")]
     public IEnumerable<WeatherForecast> Get()
     {
+        IGuidGenerator GuidGenerator = new SequentialGuidGenerator();
+        Console.WriteLine(BlogAppServiceBase.CreateGuid(GuidGenerator));// ser = new();
+
         MinimumAgeRequirement minimumAge = new MinimumAgeRequirement(1)
         {
             MinimumAge = 444

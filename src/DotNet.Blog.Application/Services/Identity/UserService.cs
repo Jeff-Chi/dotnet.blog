@@ -111,7 +111,7 @@ namespace DotNet.Blog.Application
                 ForbidError("用户名已存在!");
             }
 
-            var user = _mapper.Map(input, new User(Guid.NewGuid())
+            var user = _mapper.Map(input, new User(CreateGuid(GuidGenerator))
             {
                 IsEnabled = true
             });

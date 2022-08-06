@@ -59,7 +59,7 @@ namespace DotNet.Blog.Application
 
         public async Task<PostDto> InsertAsync(CreatePostInput input)
         {
-            var post = _mapper.Map(input, new Post(Guid.NewGuid())
+            var post = _mapper.Map(input, new Post(CreateGuid(GuidGenerator))
             {
                 UserId = _userContext.CurrentUser!.Id,
             });
