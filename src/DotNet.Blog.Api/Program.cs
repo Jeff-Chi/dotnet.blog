@@ -66,6 +66,8 @@ options.UseMySql(builder.Configuration.GetConnectionString("Blog"), MySqlServerV
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        // https 默认为true
+        options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -76,6 +78,46 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecurityKey"])),
             ClockSkew = TimeSpan.FromMinutes(5) // 偏差
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                var errorResponse = new ErrorResponse
+                {
+                    Code = ErrorCodes.AuthenticationFailed,
+                    Message = "Authentication Failed"
+                };
+
+                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                {
+                    errorResponse.Code = ErrorCodes.TokenExpired;
+                    errorResponse.Message = "Token Expired";
+                    context.Response.Headers.Add("Token-Expired", "true");
+                }
+
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = Application.Json; // "application/json";
+                context.Response.WriteAsJsonAsync(errorResponse);
+                return Task.CompletedTask;
+            }
+            //},
+            //OnChallenge = context =>
+            //{
+            //    context.HandleResponse();
+
+            //    var errorResponse = new ErrorResponse
+            //    {
+            //        Code = ErrorCodes.AuthenticationFailed,
+            //        Message = "Authentication Failed"
+            //    };
+
+            //    //context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            //    //context.Response.ContentType = Application.Json; // "application/json";
+            //    //context.Response.WriteAsJsonAsync(errorResponse);
+            //    return Task.CompletedTask;
+            //}
+
         };
     });
 
@@ -125,7 +167,7 @@ builder.Services.AddControllers()
         {
             var errorResponse = new ErrorResponse()
             {
-                Code = "400",
+                Code = ErrorCodes.ParameterValidationError,
                 Message = "One or more validation errors occurred"
             };
 
@@ -267,7 +309,7 @@ builder.Services.AddScoped<PermissionAuthorizationHandler>();
 
 // Configure Options
 
-builder.Services.Configure<SequentialGuidGeneratorOptions>(options => 
+builder.Services.Configure<SequentialGuidGeneratorOptions>(options =>
 {
     // default SequentialAsString
     if (options.DefaultSequentialGuidType == null)
@@ -322,7 +364,8 @@ app.UseExceptionHandler(options =>
                     statusCode = businessException.HttpStatusCode;
 
                     // 处理参数验证错误
-                    if (businessException.HttpStatusCode == StatusCodes.Status400BadRequest)
+                    if (businessException.HttpStatusCode == StatusCodes.Status400BadRequest 
+                    && businessException.Code == ErrorCodes.ParameterValidationError)
                     {
                         var validationErrors = new List<ValidationErrorInfo>();
                         ValidationErrorInfo validationError = new();

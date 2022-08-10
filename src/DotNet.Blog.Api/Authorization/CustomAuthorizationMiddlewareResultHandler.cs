@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using DotNet.Blog.Application.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 namespace DotNet.Blog.Api.Authorization
 {
@@ -15,10 +16,10 @@ namespace DotNet.Blog.Api.Authorization
         {
             // see https://docs.microsoft.com/en-us/aspnet/core/security/authorization/customizingauthorizationmiddlewareresponse?view=aspnetcore-6.0
             if (authorizeResult.Forbidden)
-            {
+            {   
                 var errorResponse = new ErrorResponse
                 {
-                    Code = "Error:000001",
+                    Code = ErrorCodes.PermissionDenied,
                     Message = "Permission Denied"
                 };
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;

@@ -1,4 +1,5 @@
-﻿using DotNet.Blog.Domain;
+﻿using DotNet.Blog.Application.Contracts;
+using DotNet.Blog.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace DotNet.Blog.Application
         protected static void BadRequestError(string member, List<string> errorMessages)
         {
             // 参数错误
-            throw new BusinessException("One or more validation errors occurred", "400")
+            throw new BusinessException("One or more validation errors occurred", ErrorCodes.ParameterValidationError)
             {
                 HttpStatusCode = 400,
                 ValidationErrorMember = member,
@@ -29,24 +30,24 @@ namespace DotNet.Blog.Application
         {
             if (value == null)
             {
-                throw new BusinessException(message ?? "Target not found", "404")
+                throw new BusinessException(message ?? "Target Not Found", ErrorCodes.TargetNotFound)
                 {
                     HttpStatusCode = 404
                 };
             }
         }
 
-        public static void PermissionError()
+        protected static void PermissionError()
         {
             // 权限错误
-            ForbidError("Permission Denied", "Error:000001");
+            ForbidError("Permission Denied", ErrorCodes.PermissionDenied);
         }
 
 
-        protected static void ForbidError(string? message = null, string code = "Error:000002")
+        protected static void ForbidError(string? message = null, string code = ErrorCodes.ForbidError)
         {
             // 业务通用错误，如需特殊错误自定义约定code
-            throw new BusinessException(message ?? "Client Error", "Error:000002")
+            throw new BusinessException(message ?? "Forbid Error", ErrorCodes.ForbidError)
             {
                 HttpStatusCode = 403
             };
@@ -55,7 +56,7 @@ namespace DotNet.Blog.Application
 
         public static void InternalError(string? message = null)
         {
-            throw new BusinessException(message ?? "Internal server error", "500")
+            throw new BusinessException(message ?? "Internal Server Error", ErrorCodes.InternalServerError)
             {
                 HttpStatusCode = 500
             };

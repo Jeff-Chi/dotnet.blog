@@ -1,4 +1,5 @@
-﻿using DotNet.Blog.Application.Contracts;
+﻿using DotNet.Blog.Api.Jwt;
+using DotNet.Blog.Application.Contracts;
 using DotNet.Blog.Domain;
 using DotNet.Blog.Domain.Shared;
 using IdentityModel;
@@ -20,12 +21,12 @@ namespace DotNet.Blog.Api.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly JwtOptions _jwtOptions;
         private readonly IUserService _userService;
-        public AccountController(IOptions<JwtOptions> jwtOptions, IUserService userService)
+        private readonly IJwtTokenProvider _jwtTokenProvider;
+        public AccountController(IUserService userService, IJwtTokenProvider jwtTokenProvider)
         {
-            _jwtOptions = jwtOptions.Value;
             _userService = userService;
+            _jwtTokenProvider = jwtTokenProvider;
         }
 
         #region 认证 授权 test
@@ -71,7 +72,7 @@ namespace DotNet.Blog.Api.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorResponse))]
         [Authorize(IdentityPermissions.AccountManagement.Default)]
-        public async Task<ActionResult<UserDto>> GetAsync(Guid id,GetUserDetailInput input)
+        public async Task<ActionResult<UserDto>> GetAsync(Guid id, GetUserDetailInput input)
         {
             var userDto = await _userService.GetAsync(id, input);
 
@@ -174,11 +175,11 @@ namespace DotNet.Blog.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorResponse))]
         [ProducesResponseType(StatusCodes.Status403Forbidden, Type = typeof(ErrorResponse))]
-        public async Task<string> LoginAsync(LoginDto loginDto)
+        public async Task<JwtTokenDto> LoginAsync(LoginDto loginDto)
         {
             var userDto = await _userService.GetAsync(loginDto.Account, loginDto.Password);
 
-            return CreateJwtToken(userDto);
+            return _jwtTokenProvider.GetToken(userDto);
         }
 
         //[Authorize]
@@ -197,40 +198,6 @@ namespace DotNet.Blog.Api.Controllers
 
         //    return "ok";
         //}
-
-        #region private methods
-
-        private string CreateJwtToken(UserDto dto)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecurityKey));
-            var credentials = new SigningCredentials(securityKey, _jwtOptions.Algorithms);
-            var utcNow = DateTime.UtcNow;
-
-            var claims = new Claim[]
-            {
-                new Claim(JwtClaimTypes.Id,dto.Id.ToString()),
-                new Claim(JwtClaimTypes.Name,dto.NickName),
-                new Claim(JwtClaimTypes.NickName,dto.NickName),
-                new Claim(JwtClaimTypes.Role, "Admin"),
-                new Claim("Rank", "Admin")
-                //new Claim("Id", dto.Id.ToString())
-
-                // ClaimTypes
-            };
-
-            var token = new JwtSecurityToken(
-                _jwtOptions.Issuer,
-                _jwtOptions.Audience,
-                claims,
-                notBefore: utcNow,
-                expires: utcNow.AddSeconds(_jwtOptions.Expires),
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-
-        }
-
-        #endregion
 
     }
 }
