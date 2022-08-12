@@ -20,7 +20,7 @@
         /// <summary>
         /// 是否启用
         /// </summary>
-        public bool IsEabled { get; set; }
+        public bool IsEnabled { get; set; }
 
         /// <summary>
         /// 角色列表

@@ -6,6 +6,7 @@ namespace DotNet.Blog.Api.Authorization
     // 自定义授权失败响应结果
     public class CustomAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
     {
+        // IAuthenticationMiddlewareResultHandler
         private readonly AuthorizationMiddlewareResultHandler defaultHandler = new();
 
         public async Task HandleAsync(
@@ -16,7 +17,7 @@ namespace DotNet.Blog.Api.Authorization
         {
             // see https://docs.microsoft.com/en-us/aspnet/core/security/authorization/customizingauthorizationmiddlewareresponse?view=aspnetcore-6.0
             if (authorizeResult.Forbidden)
-            {   
+            {
                 var errorResponse = new ErrorResponse
                 {
                     Code = ErrorCodes.PermissionDenied,

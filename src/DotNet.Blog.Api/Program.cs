@@ -1,6 +1,7 @@
 using DotNet.Blog.Api;
 using DotNet.Blog.Api.Authorization;
 using DotNet.Blog.Api.Extensions;
+using DotNet.Blog.Api.Middlewares;
 using DotNet.Blog.Application;
 using DotNet.Blog.Application.Contracts;
 using DotNet.Blog.Domain;
@@ -77,44 +78,64 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecurityKey"])),
-            ClockSkew = TimeSpan.FromMinutes(5) // 偏差
+            ClockSkew = TimeSpan.FromMinutes(1) // 偏差
         };
         options.Events = new JwtBearerEvents
         {
             OnAuthenticationFailed = context =>
             {
-                var errorResponse = new ErrorResponse
-                {
-                    Code = ErrorCodes.AuthenticationFailed,
-                    Message = "Authentication Failed"
-                };
+                //var errorResponse = new ErrorResponse
+                //{
+                //    Code = ErrorCodes.AuthenticationFailed,
+                //    Message = "Authentication Failed"
+                //};
 
                 if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                 {
-                    errorResponse.Code = ErrorCodes.TokenExpired;
-                    errorResponse.Message = "Token Expired";
                     context.Response.Headers.Add("Token-Expired", "true");
                 }
 
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                context.Response.ContentType = Application.Json; // "application/json";
+                //if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                //{
+                //    errorResponse.Code = ErrorCodes.TokenExpired;
+                //    errorResponse.Message = "Token Expired";
+                //    context.Response.Headers.Add("Token-Expired", "true");
+                //}
+
+                //context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                //context.Response.ContentType = Application.Json; // "application/json";
+                //context.Response.WriteAsJsonAsync(errorResponse);
+                return Task.CompletedTask;
+            },
+            OnForbidden = context =>
+            {
+                var errorResponse = new ErrorResponse
+                {
+                    Code = ErrorCodes.PermissionDenied,
+                    Message = "Permission Denied"
+                };
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "application/json";
                 context.Response.WriteAsJsonAsync(errorResponse);
                 return Task.CompletedTask;
             }
-            //},
             //OnChallenge = context =>
             //{
             //    context.HandleResponse();
 
-            //    var errorResponse = new ErrorResponse
+            //    if (!context.Response.HasStarted)
             //    {
-            //        Code = ErrorCodes.AuthenticationFailed,
-            //        Message = "Authentication Failed"
-            //    };
+            //        var errorResponse = new ErrorResponse
+            //        {
+            //            Code = ErrorCodes.AuthenticationFailed,
+            //            Message = "Authentication Failed"
+            //        };
+            //        context.Response.Headers.Add("Token-Expired1", "true");
+            //        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            //        context.Response.ContentType = Application.Json; // "application/json";
+            //        context.Response.WriteAsJsonAsync(errorResponse);
+            //    }
 
-            //    //context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            //    //context.Response.ContentType = Application.Json; // "application/json";
-            //    //context.Response.WriteAsJsonAsync(errorResponse);
             //    return Task.CompletedTask;
             //}
 
@@ -128,7 +149,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // 注入自定义策略提供程序
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
-builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
+// builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
+
+// DI Services
+//builder.Services.AddSingleton<
+//    IAuthorizationMiddlewareResultHandler, PermissionAuthorizationHandler>();
+
+builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
 // todo .. Authorization
 builder.Services.AddAuthorization(options =>
@@ -301,11 +328,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
 
-// DI Services
-//builder.Services.AddSingleton<
-//    IAuthorizationMiddlewareResultHandler, PermissionAuthorizationHandler>();
 
-builder.Services.AddScoped<PermissionAuthorizationHandler>();
 
 // Configure Options
 
@@ -420,7 +443,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 // get current user info
-// app.UseMiddleware<CurrentContextMiddleware>();
+app.UseMiddleware<CurrentUserContextMiddleware>();
 
 app.UseAuthorization();
 

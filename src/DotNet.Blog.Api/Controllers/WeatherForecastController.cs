@@ -3,6 +3,8 @@ using DotNet.Blog.Application;
 using DotNet.Blog.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using System.Text.Json;
 
 namespace DotNet.Blog.Api.Controllers;
 
@@ -100,6 +102,44 @@ public class WeatherForecastController : ControllerBase
     {
         return "At least 20 age";
     }
+
+    [HttpGet]
+    public string GetBase64()
+    {
+
+        var weatherForecast = new WeatherForecast
+        {
+            Date = DateTime.Parse("2019-08-01"),
+            Summary = "Hot",
+            TemperatureC = 100
+        };
+
+        var jsonContent = JsonSerializer.Serialize(weatherForecast);
+
+        byte[] bytes = Encoding.UTF8.GetBytes(jsonContent);
+        return Convert.ToBase64String(bytes);
+    }
+
+
+    [HttpGet]
+    public WeatherForecast GetBase64fFrom(string token)
+    {
+
+        var weatherForecast = new WeatherForecast
+        {
+            Date = DateTime.Parse("2019-08-01"),
+            Summary = "Hot",
+            TemperatureC = 100
+        };
+
+        byte[] bytes = Convert.FromBase64String(token);
+
+        var dto = JsonSerializer.Deserialize<WeatherForecast>(bytes);
+
+
+        return dto!;
+    }
+
 
     // IAuthorizationRequirement ÊÚÈ¨ÒªÇó
 

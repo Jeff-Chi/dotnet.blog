@@ -76,7 +76,7 @@ namespace DotNet.Blog.Application
             }
 
             var users = await _userRepository.GetListAsync(input);
-            var dtos = new List<UserDto>(count);
+            var dtos = _mapper.Map<List<UserDto>>(users);
 
             if (input.IncludeRole)
             {

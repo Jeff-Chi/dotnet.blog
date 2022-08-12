@@ -14,5 +14,6 @@ namespace DotNet.Blog.Api
         public string Algorithms { get; set; } = SecurityAlgorithms.HmacSha256Signature; //SecurityAlgorithms.HmacSha256;
 
         public int Expires { get; set; } = 300;
+        public int RefreshTokenExpires { get; set; } = 864000;
     }
 }

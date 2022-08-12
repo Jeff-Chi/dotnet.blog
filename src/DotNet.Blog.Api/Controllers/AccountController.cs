@@ -179,6 +179,7 @@ namespace DotNet.Blog.Api.Controllers
         {
             var userDto = await _userService.GetAsync(loginDto.Account, loginDto.Password);
 
+            HttpContext.Response.Headers.Remove("Token-Expired");
             return _jwtTokenProvider.GetToken(userDto);
         }
 
