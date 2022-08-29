@@ -141,6 +141,33 @@ public class WeatherForecastController : ControllerBase
     }
 
 
+    [HttpGet]
+    public void GetBase642()
+    {
+        var list1 = new List<int>() { 1, 2, 3, 4, 5, 6, 8234, 24 };
+
+        var ee = list1.Where(a => a > 2);
+
+        foreach (var item in list1)
+        {
+            Console.WriteLine(item);
+        }
+
+        Console.WriteLine("==========================================");
+
+        foreach (var item in ee)
+        {
+            Console.WriteLine(item);
+        }
+        Console.WriteLine("==========================================");
+        var sds = list1.OrderBy(a=>a);
+
+        foreach (var item in sds)
+        {
+            Console.WriteLine(item);
+        }
+    }
+
     // IAuthorizationRequirement 授权要求
 
     // IAuthorizationHandler 授权处理程序

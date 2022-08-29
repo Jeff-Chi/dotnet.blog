@@ -50,6 +50,19 @@ namespace DotNet.Blog.Application
             return dto;
         }
 
+        public async Task<UserDto?> GetOrNullAsync(Guid id)
+        {
+            var user = await _userRepository.GetAsync(id);
+
+            if (user == null)
+            {
+                return null;
+            }
+            var dto = _mapper.Map<UserDto>(user);
+
+            return dto;
+        }
+
         public async Task<UserDto> GetAsync(Guid id, GetUserDetailInput input)
         {
             var user = await _userRepository.GetAsync(id, input);

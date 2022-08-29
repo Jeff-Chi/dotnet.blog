@@ -179,26 +179,50 @@ namespace DotNet.Blog.Api.Controllers
         {
             var userDto = await _userService.GetAsync(loginDto.Account, loginDto.Password);
 
-            HttpContext.Response.Headers.Remove("Token-Expired");
             return _jwtTokenProvider.GetToken(userDto);
         }
 
-        //[Authorize]
-        //[HttpGet("Test")]
-        //public string GetData()
-        //{
-        //    HashSet<string> set = new HashSet<string>();
-        //    set.Add("s");
-        //    set.Add("a");
-        //    set.Add("s");
+        /// <summary>
+        /// 刷新用户认证
+        /// </summary>
+        /// <param name="refreshToken">refreshToken</param>
+        /// <returns></returns>
+        [HttpPost("refresh-token")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult<JwtTokenDto>> GetTokenAsync(string refreshToken)
+        {
+            var dto = _jwtTokenProvider.GetRefreshToken(refreshToken);
+            if (dto == null)
+            {
+                return NoContent();
+            }
+            var userDto = await _userService.GetOrNullAsync(dto.Id);
 
-        //    foreach (var item in set)
-        //    {
-        //        Console.WriteLine(item);
-        //    }
+            if (userDto == null)
+            {
+                return NoContent();
+            }
 
-        //    return "ok";
-        //}
+            return _jwtTokenProvider.GetToken(userDto);
+        }
+
+        [Authorize]
+        [HttpGet("Test")]
+        public string GetData()
+        {
+            HashSet<string> set = new HashSet<string>();
+            set.Add("s");
+            set.Add("a");
+            set.Add("s");
+
+            foreach (var item in set)
+            {
+                Console.WriteLine(item);
+            }
+
+            return "ok";
+        }
 
     }
 }

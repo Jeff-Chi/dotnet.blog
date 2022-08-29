@@ -52,21 +52,22 @@ namespace DotNet.Blog.Api.Jwt
         }
 
 
-        public JwtTokenDto GetToken(string refreshToken)
+        public RefreshTokenDto? GetRefreshToken(string refreshToken)
         {
+            byte[] bytes = Convert.FromBase64String(refreshToken);
+
+            var dto = JsonSerializer.Deserialize<RefreshTokenDto>(bytes);
+
+            return dto;
+            
+            #region Validate
+
+            // TODO:
+
             //var validationParameters = _jwtBearerOptions.TokenValidationParameters.Clone();
             //// 不校验生命周期
             //validationParameters.ValidateLifetime = false;
 
-            byte[] bytes = Convert.FromBase64String(refreshToken);
-
-
-            var dto = JsonSerializer.Deserialize<RefreshTokenDto>(bytes);
-
-            if (dto == null)
-            {
-                // TODO:
-            }
             //    var handler = _jwtBearerOptions.SecurityTokenValidators.OfType<JwtSecurityTokenHandler>().FirstOrDefault()
             //?? new JwtSecurityTokenHandler();
             //    ClaimsPrincipal? principal = null;
@@ -80,6 +81,9 @@ namespace DotNet.Blog.Api.Jwt
             //        _logger.LogWarning(ex.ToString());
             //        throw new BadHttpRequestException("Invalid access token");
             //    }
+
+            #endregion
+
 
             throw new Exception();
         }

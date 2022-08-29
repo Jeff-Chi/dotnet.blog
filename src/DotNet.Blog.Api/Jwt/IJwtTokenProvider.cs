@@ -5,8 +5,8 @@ namespace DotNet.Blog.Api.Jwt
 {
     public interface IJwtTokenProvider: IScopedDependency
     {
-        JwtTokenDto GetToken(UserDto claims);
+        JwtTokenDto GetToken(UserDto dto);
 
-        JwtTokenDto GetToken(string refreshToken);
+        RefreshTokenDto? GetRefreshToken(string refreshToken);
     }
 }
