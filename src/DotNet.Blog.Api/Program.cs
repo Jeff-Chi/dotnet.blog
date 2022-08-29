@@ -82,29 +82,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
         options.Events = new JwtBearerEvents
         {
+            // action 上没有加Authorize, 此事件也会执行, 如果这里有响应返回, 则action会报错
             OnAuthenticationFailed = context =>
             {
-                //var errorResponse = new ErrorResponse
-                //{
-                //    Code = ErrorCodes.AuthenticationFailed,
-                //    Message = "Authentication Failed"
-                //};
-
+                context.Response.Headers.Add("Token-Expired", "true");
                 if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
                 {
                     context.Response.Headers.Add("Token-Expired", "true");
                 }
-
-                //if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                //{
-                //    errorResponse.Code = ErrorCodes.TokenExpired;
-                //    errorResponse.Message = "Token Expired";
-                //    context.Response.Headers.Add("Token-Expired", "true");
-                //}
-
-                //context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                //context.Response.ContentType = Application.Json; // "application/json";
-                //context.Response.WriteAsJsonAsync(errorResponse);
                 return Task.CompletedTask;
             },
             OnForbidden = context =>
@@ -118,26 +103,36 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 context.Response.ContentType = "application/json";
                 context.Response.WriteAsJsonAsync(errorResponse);
                 return Task.CompletedTask;
+            },
+            OnChallenge = context =>
+            {
+                // 没有 Authorize 时 OnChallenge 事件不执行
+
+                context.HandleResponse();
+
+                // 响应已开始,不做处理
+                if (!context.Response.HasStarted)
+                {
+                    var errorResponse = new ErrorResponse
+                    {
+                        Code = ErrorCodes.AuthenticationFailed,
+                        Message = "Authentication Failed"
+                    };
+
+                    if (context.Response.Headers.ContainsKey("Token-Expired"))
+                    {
+                        context.Response.Headers.Remove("Token-Expired");
+                        errorResponse.Code = ErrorCodes.TokenExpired;
+                        errorResponse.Message = "Token Expired";
+                    }
+
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.ContentType = Application.Json; // "application/json";
+                    context.Response.WriteAsJsonAsync(errorResponse);
+                }
+
+                return Task.CompletedTask;
             }
-            //OnChallenge = context =>
-            //{
-            //    context.HandleResponse();
-
-            //    if (!context.Response.HasStarted)
-            //    {
-            //        var errorResponse = new ErrorResponse
-            //        {
-            //            Code = ErrorCodes.AuthenticationFailed,
-            //            Message = "Authentication Failed"
-            //        };
-            //        context.Response.Headers.Add("Token-Expired1", "true");
-            //        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            //        context.Response.ContentType = Application.Json; // "application/json";
-            //        context.Response.WriteAsJsonAsync(errorResponse);
-            //    }
-
-            //    return Task.CompletedTask;
-            //}
 
         };
     });
@@ -387,7 +382,7 @@ app.UseExceptionHandler(options =>
                     statusCode = businessException.HttpStatusCode;
 
                     // 处理参数验证错误
-                    if (businessException.HttpStatusCode == StatusCodes.Status400BadRequest 
+                    if (businessException.HttpStatusCode == StatusCodes.Status400BadRequest
                     && businessException.Code == ErrorCodes.ParameterValidationError)
                     {
                         var validationErrors = new List<ValidationErrorInfo>();
